@@ -9,6 +9,7 @@ configurés sans barre d'outils, qui est inutilisable au doigt.
 from __future__ import annotations
 
 import io
+import json
 import re
 
 import numpy as np
@@ -24,8 +25,8 @@ from engine.store import get_store, ACTIVITIES, SLOPE_BINS, TOKENS, JOURNAL, COU
 
 st.set_page_config(page_title="Trail Lab", page_icon="⛰️", initial_sidebar_state="collapsed")
 
-APP_VERSION = "2026-08-26-I"
-VERSION = "2026-08-26-I"
+APP_VERSION = "2026-08-27-D"
+VERSION = "2026-08-27-D"
 
 PLOTLY_CFG = {"displayModeBar": False, "scrollZoom": False}
 
@@ -104,6 +105,20 @@ CSS = """
   .note { font-family: %(mono)s; font-size: 11.5px; color: %(soft)s;
           margin: -10px 0 20px; line-height: 1.5; }
   hr { border-color: %(hair)s; }
+
+  /* Sous 640 px, les colonnes Streamlit s'empilent au lieu de se
+     comprimer. Complémentaire de la détection serveur : celle-ci choisit
+     QUELS éléments afficher, ceci gère la largeur. */
+  @media (max-width: 640px) {
+    [data-testid="stHorizontalBlock"] { flex-wrap: wrap; }
+    /* Pourcents doublés : ce bloc est interpolé par l'opérateur modulo. */
+    [data-testid="stHorizontalBlock"] > div { min-width: 46%% !important; }
+    h1 { font-size: 1.9rem !important; }
+    .stTabs [data-baseweb="tab"] { font-size: 10.5px; letter-spacing: .08em; }
+    [data-testid="stMetricValue"] { font-size: 1.5rem; }
+    .lecture { font-size: 15px; padding: 12px 14px; }
+  }
+
   .wk-head { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
              margin: 8px 0 2px; }
   .wk-num { font-family:%(display)s; font-size:34px; font-weight:700;
@@ -135,6 +150,38 @@ CSS = """
 """ % {"body": BODY, "display": DISPLAY, "mono": MONO, "paper": PAPER,
        "card": CARD, "ink": INK, "accent": ACCENT, "hair": HAIR,
        "soft": SOFT, "paper": PAPER}
+
+
+MOBILE_UA = re.compile(
+    r"iphone|ipod|android.*mobile|windows phone|blackberry|opera mini",
+    re.I)
+
+
+def est_mobile() -> bool:
+    """
+    Détecte un téléphone depuis l'en-tête User-Agent, côté serveur.
+
+    POURQUOI CE N'EST PAS DU CONFORT. Sur le plan d'entraînement, chaque
+    séance occupe deux rangées de cinq puis trois colonnes. Sur un écran de
+    380 pixels, cela donne des colonnes de 60 pixels : illisible. Il faut
+    donc changer la STRUCTURE de la page, pas seulement sa largeur — et
+    Streamlit décide cette structure côté serveur, avant tout rendu.
+    
+    L'iPad est délibérément traité comme un ordinateur : sa largeur permet
+    l'affichage complet, et son User-Agent ne contient pas « mobile ».
+
+    Un interrupteur manuel reste disponible dans les réglages : la
+    détection par User-Agent est fiable mais pas infaillible, et on peut
+    vouloir la version compacte sur un petit écran d'ordinateur.
+    """
+    force = st.session_state.get("force_affichage")
+    if force in ("mobile", "bureau"):
+        return force == "mobile"
+    try:
+        ua = st.context.headers.get("User-Agent", "")
+    except Exception:
+        return False
+    return bool(MOBILE_UA.search(ua or ""))
 
 
 def lecture(txt: str):
@@ -1252,19 +1299,15 @@ def _course_view(store, d, hist, hr_rest, hr_max, nom=""):
 
     km = d["cum_dist"] / 1000
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=km, y=d["ele_smooth"], fill="tozeroy", name="Altitude",
-                             line=dict(color=MUTED, width=1),
-                             fillcolor="rgba(122,132,148,0.15)"))
-    fig.update_layout(title="Profil de la course", yaxis_title="m")
-    show(fig, 220)
-
-    segs = predict.segment_course(d)
-    st.subheader(f"{len(segs)} segments")
+    fig.add_trace(go.Scatter(x=km, y=d["ele_smooth"], fill="tozeroy",
+                             name="Altitude", line=dict(color=MUTED, width=1),
+                             fillcolor=_rgba(MUTED, .16)))
+    fig.update_layout(title="PROFIL DE LA COURSE", yaxis=dict(title="m"))
+    show(fig, 260)
 
     if hist.empty:
         st.warning("Pas d'historique : impossible de prédire un temps. "
                    "Importe d'abord tes sorties passées.")
-        st.dataframe(segs.round(2), use_container_width=True, hide_index=True)
         return
 
     hist["date"] = pd.to_datetime(hist["date"])
@@ -1306,51 +1349,154 @@ def _course_view(store, d, hist, hr_rest, hr_max, nom=""):
                       f"écart {cc['ecart']:.3f}")
             (note if cc["accord"] else st.warning)(cc["verdict"])
 
-    # ── Plan par segment ──────────────────────────────────────────────────
-    if not bins.empty and "pente_centre" in bins.columns and pred.get("ok"):
-        drift = float(runs["drift"].dropna().tail(15).median()) \
-            if "drift" in runs.columns and runs["drift"].notna().any() else None
-        bs = efforts.base_speed(curve, pred["hours"]) if curve.get("ok") else {}
-        plan = predict.race_plan(segs, bins, runs["activity_id"],
-                                 total_h=pred["hours"], drift=drift,
-                                 base_kmh=bs.get("v_kmh"))
-        if plan.empty:
-            st.info("Segmentation vide.")
-        else:
-            st.subheader("Plan par segment")
-            note("Les bandes de pente donnent la répartition, le modèle "
-                 "d'endurance donne le total. La dérive cardiaque ne rallonge "
-                 "pas la course — l'exposant d'endurance porte déjà la "
-                 "fatigue — elle répartit seulement le ralentissement du "
-                 "départ vers l'arrivée.")
-            aff = plan[["km_debut", "km_fin", "d_plus", "pente_moy", "type",
-                        "mode", "vitesse_prevue_kmh", "allure_min_km",
-                        "temps_h", "temps_cumule_h", "source"]].copy()
-            aff.columns = ["km début", "km fin", "D+", "pente", "terrain",
-                           "mode", "km/h", "min/km", "durée h", "cumul h",
-                           "source"]
-            st.dataframe(
-                aff.style.format({
-                    "km début": "{:.1f}", "km fin": "{:.1f}", "D+": "{:.0f}",
-                    "pente": "{:.1%}", "km/h": "{:.1f}", "min/km": "{:.1f}",
-                    "durée h": "{:.2f}", "cumul h": "{:.2f}"}),
-                use_container_width=True, hide_index=True)
+    st.divider()
+    _bloc_ravitos(store, d, pred, curve, bins, runs, nom)
 
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(
-                x=plan["km_fin"], y=plan["temps_cumule_h"],
-                mode="lines+markers", name="Temps cumulé",
-                line=dict(color=ACCENT, width=3, shape="spline"),
-                customdata=np.stack([plan["vitesse_prevue_kmh"],
-                                     plan["pente_moy"] * 100], axis=-1),
-                hovertemplate=("km %{x:.1f}<br>%{y:.2f} h"
-                               "<br>%{customdata[0]:.1f} km/h"
-                               "<br>pente %{customdata[1]:+.0f} %<extra></extra>")))
-            fig.update_layout(title="TEMPS DE PASSAGE PRÉVU",
-                              yaxis_title="heures", xaxis_title="km")
-            show(fig, 260)
-    else:
-        st.info("Table des bandes vide : pas de plan par segment.")
+
+def _ravitos_en_base(store, nom_course: str):
+    """Repères mémorisés pour cette course, s'il y en a."""
+    if not nom_course:
+        return None
+    try:
+        c = store.read(COURSES)
+        if c.empty or "reperes" not in c.columns:
+            return None
+        ligne = c[c["nom"].astype(str) == str(nom_course)]
+        if ligne.empty or pd.isna(ligne["reperes"].iloc[0]):
+            return None
+        data = json.loads(str(ligne["reperes"].iloc[0]))
+        return pd.DataFrame(data) if data else None
+    except Exception:
+        return None
+
+
+def _ravitos_vers_base(store, nom_course: str, marques: pd.DataFrame) -> None:
+    if not nom_course:
+        return
+    propre = marques.dropna(subset=["km"]).copy()
+    propre["nom"] = propre["nom"].fillna("Repère").astype(str)
+    propre["km"] = propre["km"].astype(float)
+    store.upsert(COURSES, pd.DataFrame([{
+        "course_id": re.sub(r"[^A-Za-z0-9]+", "_", nom_course)[:60],
+        "nom": nom_course,
+        "reperes": json.dumps(propre[["nom", "km"]].to_dict("records"),
+                              ensure_ascii=False),
+    }]), key="course_id")
+
+
+def _bloc_ravitos(store, d, pred, curve, bins, runs, nom_course=""):
+    """
+    Repères placés à la main, temps de passage calculés.
+
+    Remplace la segmentation automatique par changement de pente, qui
+    produisait quatre-vingts micro-tronçons de quelques centaines de mètres
+    tous étiquetés « plat » — illisible et sans lien avec le terrain. Un
+    ravitaillement, un col, une barrière horaire : voilà les repères qui
+    comptent le jour de la course.
+    """
+    st.subheader("Temps de passage")
+    if not pred.get("ok"):
+        st.info("Le temps total doit être calculé avant de répartir.")
+        return
+
+    total_km = float(d["dist"].sum() / 1000)
+    cle = f"ravitos_{re.sub(r'[^A-Za-z0-9]+', '_', nom_course)[:40]}"
+
+    # LA SOURCE DU TABLEAU NE DOIT JAMAIS ÊTRE RÉÉCRITE.
+    #
+    # La version précédente réassignait st.session_state[cle] avec la valeur
+    # renvoyée par l'éditeur. Or Streamlit garde l'état de l'éditeur — les
+    # lignes ajoutées, modifiées, supprimées — sous sa propre clé, en RELATIF
+    # par rapport aux données source. Changer la source à chaque exécution
+    # invalidait cet état : la première tentative d'ajout était perdue, et
+    # il fallait recommencer.
+    #
+    # La source reste donc figée, et la persistance passe par Supabase, où
+    # elle est explicite.
+    if cle not in st.session_state:
+        depuis_base = _ravitos_en_base(store, nom_course)
+        if depuis_base is not None:
+            st.session_state[cle] = depuis_base
+        else:
+            pas = 15.0
+            st.session_state[cle] = pd.DataFrame([
+                {"nom": f"Ravito {i}", "km": round(i * pas, 1)}
+                for i in range(1, int(total_km // pas) + 1)])
+
+    marques = st.data_editor(
+        st.session_state[cle], num_rows="dynamic", hide_index=True,
+        use_container_width=True, key=f"ed_{cle}",
+        column_config={
+            "nom": st.column_config.TextColumn("Repère", width="medium"),
+            "km": st.column_config.NumberColumn(
+                "km", min_value=0.0, max_value=float(total_km),
+                step=0.1, format="%.1f")})
+
+    c1, c2 = st.columns([1, 3])
+    if c1.button("Mémoriser les repères", key=f"sv_{cle}"):
+        _ravitos_vers_base(store, nom_course, marques)
+        st.session_state[cle] = marques.reset_index(drop=True)
+        st.success("Repères mémorisés.")
+        st.rerun()
+    pacing_note = c2.empty()
+
+    marques = marques.dropna(subset=["km"])
+    if marques.empty:
+        note("Ajoute un repère pour obtenir des temps de passage. "
+             "Le bouton « + » en bas du tableau crée une ligne.")
+        return
+
+    drift = (float(runs["drift"].dropna().tail(15).median())
+             if "drift" in runs.columns and runs["drift"].notna().any() else None)
+    bs = efforts.base_speed(curve, pred["hours"]) if curve.get("ok") else {}
+
+    t = predict.split_at_marks(
+        d, marques.to_dict("records"), total_h=pred["hours"], bins=bins,
+        activity_ids=runs["activity_id"], drift=drift,
+        base_kmh=bs.get("v_kmh"))
+    if t.empty:
+        st.info("Aucun tronçon exploitable.")
+        return
+
+    pacing_note.caption(
+        f"Total {predict.fmt_hours(pred['hours'])}"
+        + (f" · dérive {(drift - 1) * 100:+.0f} %" if drift else ""))
+
+    # D− affiché à côté du D+ : sans lui, une section très descendante
+    # ressemble à une section facile, et l'allure prévue paraît incohérente.
+    aff = pd.DataFrame({
+        "Tronçon": t["de"] + " → " + t["a"],
+        "km": t["km_fin"].round(1),
+        "Distance": t["distance_km"].round(1),
+        "D+": t["d_plus"].round(0).astype(int),
+        "D−": t["d_minus"].round(0).astype(int),
+        "Durée": [predict.fmt_hours(x) for x in t["temps_h"]],
+        "Cumul": [predict.fmt_hours(x) for x in t["cumule_h"]],
+        "km/h": t["vitesse_kmh"].round(1),
+    })
+    st.dataframe(aff, hide_index=True, use_container_width=True)
+
+    note("La répartition vient de ton profil par bande de pente, le total "
+         "du modèle d'endurance, et la dérive cardiaque ralentit la fin par "
+         "rapport au début — à total constant. Les temps sont donc des "
+         "cibles cohérentes entre elles, pas des prévisions indépendantes.")
+
+    # Profil avec les repères
+    km = d["cum_dist"] / 1000
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=km, y=d["ele_smooth"], name="Altitude",
+                             fill="tozeroy", line=dict(color=MUTED, width=1),
+                             fillcolor=_rgba(MUTED, .16)))
+    haut = float(d["ele_smooth"].max())
+    for _, r in t.iloc[:-1].iterrows():
+        fig.add_vline(x=r["km_fin"],
+                      line=dict(color=_rgba(ACCENT, .55), width=1.5, dash="dot"))
+        fig.add_annotation(x=r["km_fin"], y=haut, text=r["a"], showarrow=False,
+                           textangle=-90, xshift=-9, yanchor="top",
+                           font=dict(family=DISPLAY, size=11, color=ACCENT))
+    fig.update_layout(title="PROFIL ET REPÈRES", yaxis=dict(title="m"),
+                      xaxis=dict(title="km"))
+    show(fig, 300)
 
 
 # ── Onglet 4 : plan d'entraînement ───────────────────────────────────────────
@@ -1488,6 +1634,11 @@ def tab_plan(store):
     COULEUR = {"trail": GOOD, "route": GOOD, "velo": COOL,
                "renfo": ACCENT, "repos": MUTED}
 
+    if est_mobile():
+        _plan_mobile(store, sem, r, w, COULEUR)
+        _plan_avancement(rec)
+        return
+
     with st.form(f"sem_{int(w)}"):
         saisies = []
         for i, row in sem.iterrows():
@@ -1548,7 +1699,66 @@ def tab_plan(store):
                        "tes appareils.")
             st.rerun()
 
-    # ── Avancement du cycle ───────────────────────────────────────────────
+    _plan_avancement(rec)
+
+
+def _plan_mobile(store, sem, r, w, COULEUR):
+    """
+    Une séance par bloc dépliable.
+
+    Sur téléphone, la disposition en colonnes de l'ordinateur devient
+    illisible. Ici chaque séance tient sur une ligne fermée — case à
+    cocher, jour, titre, durée prévue — et se déplie pour la saisie. Un
+    seul niveau de lecture, rien côte à côte.
+    """
+    st.caption("Touche une séance pour saisir le temps et le commentaire.")
+    with st.form(f"sem_mob_{int(w)}"):
+        saisies = []
+        for i, row in sem.iterrows():
+            reel = r["reel_par_seance"][i]
+            fait_def = bool(row["fait"]) if pd.notna(row["fait"]) \
+                else row["statut"] == "réalisée"
+            prevu = _fmt_range(row["duree_min_bas"], row["duree_min_haut"])
+            em = plan_mod.ecart_minutes(reel, row["duree_min_bas"],
+                                        row["duree_min_haut"])
+            marque = "✓ " if fait_def else ""
+            etoile = " ★" if row["seance_cle"] else ""
+            resume = (f"{marque}{row['date']:%a %d} · {row['titre']}{etoile}"
+                      f" · {prevu}")
+            if reel is not None and not (isinstance(reel, float) and np.isnan(reel)):
+                resume += f" → {plan_mod.fmt_minutes(reel)} ({plan_mod.ecart_hm(em)})"
+
+            with st.expander(resume, expanded=False):
+                st.markdown(f"<span class='s-txt'>{row['consigne'] or ''}</span>",
+                            unsafe_allow_html=True)
+                fait = st.checkbox("Séance réalisée", value=fait_def,
+                                   key=f"mf_{w}_{i}")
+                temps = st.text_input(
+                    "Temps effectif",
+                    value=plan_mod.fmt_minutes(reel).replace("—", ""),
+                    key=f"mt_{w}_{i}", placeholder="2h35 ou 155")
+                note_txt = st.text_input(
+                    "Commentaire", value=str(row["commentaire"] or ""),
+                    key=f"mc_{w}_{i}", placeholder="Sensations, genou, météo…")
+            saisies.append({"planned_key": str(row["planned_key"]),
+                            "fait": bool(fait), "temps": temps,
+                            "commentaire": note_txt})
+
+        if st.form_submit_button("Enregistrer la semaine", type="primary",
+                                 use_container_width=True):
+            maj = pd.DataFrame([{
+                "planned_key": x["planned_key"], "fait": x["fait"],
+                "temps_min": plan_mod.parse_temps(x["temps"]),
+                "commentaire": x["commentaire"] or None,
+                "maj": pd.Timestamp.now(),
+            } for x in saisies]).drop_duplicates(subset=["planned_key"],
+                                                 keep="last")
+            store.upsert(JOURNAL, maj, key="planned_key")
+            st.success("Enregistré dans Supabase.")
+            st.rerun()
+
+
+def _plan_avancement(rec):
     st.subheader("Avancement du cycle")
     c = plan_mod.compliance(rec)
     if not c.get("ok"):
