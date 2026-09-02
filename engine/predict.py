@@ -150,8 +150,22 @@ def fit_endurance_model(hist: pd.DataFrame, months: int = 24,
     # Seules les séances à effort continu. Le fractionné, l'indéterminé et
     # les sorties trop courtes ont un temps total qui ne décrit aucun
     # effort soutenu — et ce sont eux qui écrasaient l'exposant à 0,84.
+    # EXCLUSION RESTREINTE AU FRACTIONNÉ ET AUX SORTIES TROP COURTES.
+    #
+    # La version précédente ne gardait que « continu », « variable »,
+    # « sortie longue » et « course », écartant donc « indéterminée ».
+    # Mesuré sur la base réelle : au-delà du seuil de distance, les six
+    # séances « indéterminée » sont de vraies sorties longues où la
+    # détection n'a pas pu trancher — fréquence cardiaque manquante ou trop
+    # peu de blocs courus. C'est la détection qui a échoué, pas la séance.
+    #
+    # Les exclure coûtait 6 points sur 32 et dégradait l'erreur de
+    # prédiction de 12 à 13 %. Le seuil de distance suffit à écarter le
+    # fractionné, qui dépasse rarement 19 km-effort ; on ne conserve donc
+    # l'exclusion explicite que pour les cas où le temps total ne décrit
+    # manifestement aucun effort soutenu.
     if "session_type" in d.columns:
-        d = d[d["session_type"].isin(["continu", "variable", "sortie longue", "course"])]
+        d = d[~d["session_type"].isin(["fractionné", "trop courte"])]
 
     # La DÉCLARATION fait foi. `terrain`, déduit du dénivelé par kilomètre,
     # n'est plus qu'un contrôle de cohérence : c'est toi qui sais ce que tu
@@ -344,6 +358,137 @@ def match_history(segment: dict, hist_bins: pd.DataFrame,
     lo, hi = segment["pente_moy"] - tolerance, segment["pente_moy"] + tolerance
     m = hist_bins["pente_centre"].between(lo, hi)
     return hist_bins[m].sort_values("date", ascending=False)
+
+
+def band_profile(bins: pd.DataFrame, activity_ids,
+                min_dist_km: float = 0.2) -> tuple:
+    """
+    Ta vitesse par pente, telle que mesurée. Renvoie (pentes, vitesses).
+
+    Sert à répartir le temps le long d'un parcours : c'est la seule source
+    qui sache que tu montes à 6 km/h à 12 % et descends à 13 km/h à −9 %.
+    """
+    if bins.empty or "pente_centre" not in bins.columns:
+        return np.array([]), np.array([])
+    b = bins.copy()
+    b["activity_id"] = b["activity_id"].astype(str)
+    b = b[b["activity_id"].isin(set(map(str, activity_ids)))]
+    if "distance_km" not in b.columns:
+        b["distance_km"] = b["vitesse_kmh"] * b["temps_min"] / 60
+    b = b[b["vitesse_kmh"].notna() & (b["distance_km"] > min_dist_km)]
+    if b.empty:
+        return np.array([]), np.array([])
+    profil = {}
+    for band, g in b.groupby("bande", observed=True):
+        if len(g) < 3 or g["distance_km"].sum() < 2:
+            continue
+        profil[float(g["pente_centre"].iloc[0])] = float(
+            np.average(g["vitesse_kmh"], weights=g["distance_km"]))
+    if len(profil) < 3:
+        return np.array([]), np.array([])
+    pentes = np.array(sorted(profil))
+    return pentes, np.array([profil[p] for p in pentes])
+
+
+def expected_pace(d: pd.DataFrame, pentes, vitesses,
+                  base_kmh: float | None = None) -> np.ndarray:
+    """
+    Temps attendu point par point, en secondes, avant calage sur le total.
+
+    On travaille au POINT et non au segment : la pente moyenne d'un
+    tronçon de dix kilomètres ne dit rien de sa difficulté réelle, alors
+    que la distribution de ses pentes la porte entièrement. Un tronçon
+    plat-descendant et un tronçon montant-descendant peuvent partager la
+    même pente moyenne et demander des temps très différents.
+    """
+    slope = d["slope"].to_numpy()
+    dist = d["dist"].to_numpy()
+    if len(pentes) >= 3:
+        v = np.interp(slope, pentes, vitesses)
+    else:
+        ref = base_kmh or 10.0
+        v = ref * CR_FLAT / physio.cost_running(slope)
+    v = np.clip(v, 1.0, 30.0)
+    return dist / 1000 / v * 3600
+
+
+def split_at_marks(d: pd.DataFrame, marques: list[dict], total_h: float,
+                   bins: pd.DataFrame, activity_ids,
+                   drift: float | None = None,
+                   base_kmh: float | None = None,
+                   depart: pd.Timestamp | None = None) -> pd.DataFrame:
+    """
+    Temps de passage aux repères que TU places sur le parcours.
+
+    marques : [{"nom": "Ravito 1", "km": 12.5}, ...]
+
+    Trois principes, les mêmes que pour le total.
+
+    1. LA FORME VIENT DE TON PROFIL par bande de pente, appliqué point par
+       point puis cumulé entre repères.
+    2. LE TOTAL VIENT DU MODÈLE D'ENDURANCE. Les temps par tronçon sont
+       renormalisés pour que leur somme soit exactement le temps prédit —
+       ton profil est mesuré à intensité d'entraînement, il ne sait rien de
+       ce qui se passe à la huitième heure.
+    3. LA DÉRIVE RÉPARTIT, elle n'ajoute pas. L'exposant d'endurance porte
+       déjà la fatigue ; la dérive cardiaque sert seulement à ralentir la
+       fin par rapport au début, à total constant.
+    """
+    if d.empty or not marques:
+        return pd.DataFrame()
+
+    cum = d["cum_dist"].to_numpy() / 1000
+    total_km = float(cum[-1])
+
+    # Bornes : départ, repères triés et dédoublonnés, arrivée.
+    kms = sorted({round(float(m["km"]), 3) for m in marques
+                  if 0 < float(m["km"]) < total_km})
+    noms = {round(float(m["km"]), 3): str(m.get("nom") or "Repère")
+            for m in marques}
+    bornes = [0.0] + kms + [total_km]
+    labels = ["Départ"] + [noms[k] for k in kms] + ["Arrivée"]
+
+    pentes, vitesses = band_profile(bins, activity_ids)
+    sec = expected_pace(d, pentes, vitesses, base_kmh)
+
+    # Modulation : plus lent à la fin, à somme constante.
+    amp = float(np.clip((drift or 1.0) - 1.0, 0.0, 0.30))
+    frac = cum / max(total_km, 1e-9)
+    sec = sec * (1.0 + amp * (frac - 0.5))
+
+    facteur = total_h * 3600 / max(sec.sum(), 1e-9)
+    sec = sec * facteur
+
+    dplus = d["d_plus"].to_numpy()
+    dmoins = d["d_minus"].to_numpy()
+    dist = d["dist"].to_numpy() / 1000
+
+    lignes, cumule = [], 0.0
+    for i in range(len(bornes) - 1):
+        a, b = bornes[i], bornes[i + 1]
+        m = (cum > a) & (cum <= b) if i else (cum <= b)
+        if m.sum() == 0:
+            continue
+        t_h = float(sec[m].sum() / 3600)
+        cumule += t_h
+        km_seg = float(dist[m].sum())
+        dp = float(dplus[m].sum())
+        lignes.append({
+            "de": labels[i], "a": labels[i + 1],
+            "km_debut": a, "km_fin": b,
+            "distance_km": km_seg,
+            "d_plus": dp, "d_minus": float(dmoins[m].sum()),
+            "ke_km": km_effort(km_seg, dp),
+            "temps_h": t_h,
+            "cumule_h": cumule,
+            "vitesse_kmh": km_seg / t_h if t_h > 0 else np.nan,
+            "heure": (depart + pd.Timedelta(hours=cumule)).strftime("%H:%M")
+                     if depart is not None else None,
+        })
+    t = pd.DataFrame(lignes)
+    if not t.empty:
+        t["source"] = "profil" if len(pentes) >= 3 else "modèle"
+    return t
 
 
 def race_plan(course: pd.DataFrame, bins: pd.DataFrame, activity_ids,
