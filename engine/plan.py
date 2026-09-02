@@ -628,6 +628,32 @@ def migrate_journal_keys(plan: pd.DataFrame, journal: pd.DataFrame) -> dict:
             "anciennes_cles": vieilles["planned_key"].tolist()}
 
 
+def semaine_du_jour(rec: pd.DataFrame, today, semaines) -> int:
+    """
+    Semaine à afficher par défaut : celle qui CONTIENT la date du jour.
+
+    La version précédente cherchait les séances dans une fenêtre de plus ou
+    moins six jours autour d'aujourd'hui, puis prenait la première. Le
+    2 septembre, cette fenêtre couvrait le 27 août au 8 septembre : elle
+    attrapait donc la fin de la semaine 1 avant le début de la semaine 2, et
+    proposait la semaine 1. Une fenêtre glissante ne peut pas répondre à
+    « quelle semaine sommes-nous » — il faut tester l'appartenance.
+    """
+    if not len(semaines):
+        return 0
+    bornes = (rec.dropna(subset=["date", "semaine"])
+              .groupby("semaine")["date"].agg(["min", "max"]))
+    for w, (d1, d2) in bornes.iterrows():
+        if d1 <= today <= d2:
+            return int(w)
+    # Entre deux semaines, ou hors du cycle : la plus proche à venir, sinon
+    # la dernière écoulée.
+    a_venir = bornes[bornes["min"] > today]
+    if len(a_venir):
+        return int(a_venir["min"].idxmin())
+    return int(bornes["max"].idxmax())
+
+
 def week_summary(sem: pd.DataFrame) -> dict:
     """
     Bandeau de tête d'une semaine, au format du plan.
