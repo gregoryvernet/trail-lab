@@ -450,6 +450,7 @@ alter table courses
   add column if not exists ke_km         double precision,
   add column if not exists deq_km        double precision,
   add column if not exists profil        text,
+  add column if not exists reperes       text,
   add column if not exists importe_le    timestamptz;
 
 create table if not exists tokens (
