@@ -25,8 +25,8 @@ from engine.store import get_store, ACTIVITIES, SLOPE_BINS, TOKENS, JOURNAL, COU
 
 st.set_page_config(page_title="Trail Lab", page_icon="⛰️", initial_sidebar_state="collapsed")
 
-APP_VERSION = "2026-08-27-D"
-VERSION = "2026-08-27-D"
+APP_VERSION = "2026-08-27-E"
+VERSION = "2026-08-27-E"
 
 PLOTLY_CFG = {"displayModeBar": False, "scrollZoom": False}
 
@@ -182,6 +182,44 @@ def est_mobile() -> bool:
     except Exception:
         return False
     return bool(MOBILE_UA.search(ua or ""))
+
+
+# ── Cache de lecture ─────────────────────────────────────────────────────────
+#
+# Streamlit réexécute la totalité du script au moindre clic — changer
+# d'onglet, bouger un curseur, cocher une case. Or le script effectue une
+# quinzaine de lectures de base, chacune étant un aller-retour réseau vers
+# Supabase, et `slope_bins` en demande deux à lui seul du fait de la
+# pagination. Sans cache, chaque interaction coûtait donc une vingtaine
+# d'appels réseau pour des données inchangées.
+#
+# Le cache est invalidé explicitement après chaque écriture, via un
+# compteur de version. Un TTL seul ne suffirait pas : après avoir coché une
+# séance, on veut la voir immédiatement, pas dans cinq minutes.
+
+
+@st.cache_data(ttl=600, show_spinner=False)
+def _lire_cache(backend: str, table: str, version: int) -> pd.DataFrame:
+    """`backend` et `version` ne servent qu'à distinguer les entrées."""
+    return _STORE_ACTIF.read(table)   # accès direct : pas de récursion
+
+
+_STORE_ACTIF = None
+
+
+def lire(store, table: str) -> pd.DataFrame:
+    """Lecture mise en cache jusqu'à la prochaine écriture."""
+    global _STORE_ACTIF
+    _STORE_ACTIF = store
+    v = st.session_state.get("_version_base", 0)
+    return _lire_cache(store.backend, table, v)
+
+
+def ecrire(store, table: str, df: pd.DataFrame, key="activity_id") -> None:
+    """Écriture, suivie de l'invalidation du cache de lecture."""
+    store.upsert(table, df, key=key)
+    st.session_state["_version_base"] = \
+        st.session_state.get("_version_base", 0) + 1
 
 
 def lecture(txt: str):
@@ -460,8 +498,8 @@ def _sortie_pied(store, raw, d, disc, filename, hr_rest, hr_max):
 
 def _compare_block(store, res):
     """Cette sortie face au backlog, sur la période choisie."""
-    hist = store.read(ACTIVITIES)
-    bins = store.read(SLOPE_BINS)
+    hist = lire(store, ACTIVITIES)
+    bins = lire(store, SLOPE_BINS)
     if hist.empty or bins.empty:
         return
 
@@ -585,9 +623,9 @@ def _save_block(store, raw, res, filename, disc="trail"):
                                       ftp=st.session_state.get("ftp"),
                                       poids_kg=st.session_state.get("poids_kg"))
         row["session_type"] = seance          # le choix manuel prime toujours
-        store.upsert(ACTIVITIES, pd.DataFrame([row]), key="activity_id")
+        ecrire(store, ACTIVITIES, pd.DataFrame([row]), key="activity_id")
         if not bins.empty:
-            store.upsert(SLOPE_BINS, bins, key=["activity_id", "bande"])
+            ecrire(store, SLOPE_BINS, bins, key=["activity_id", "bande"])
         st.success(f"Enregistré comme « {seance} ».")
     except Exception as e:
         st.error(f"Enregistrement impossible : {e}")
@@ -761,8 +799,8 @@ def transitions_chart(table: pd.DataFrame, titre: str):
 
 def tab_profil(store):
     """État : ce que tu vaux et où tu cours. Aucune comparaison."""
-    hist = store.read(ACTIVITIES)
-    bins = store.read(SLOPE_BINS)
+    hist = lire(store, ACTIVITIES)
+    bins = lire(store, SLOPE_BINS)
     if hist.empty or bins.empty:
         st.info("Aucune activité. Importe ton historique depuis Réglages.")
         return
@@ -947,7 +985,7 @@ def quadrant_chart(t: pd.DataFrame):
 
 
 def tab_historique(store):
-    hist = store.read(ACTIVITIES)
+    hist = lire(store, ACTIVITIES)
     if hist.empty:
         st.info("Aucune activité. Importe ton historique depuis l'onglet Réglages.")
         return
@@ -978,7 +1016,7 @@ def tab_historique(store):
                f"(depuis le {recent['date'].min():%d/%m}) comparées aux "
                f"**{len(past)} précédentes** sur « {label} ».")
 
-    bins = store.read(SLOPE_BINS)
+    bins = lire(store, SLOPE_BINS)
     rid, pid = recent["activity_id"], past["activity_id"]
 
     st.subheader("1. Montée")
@@ -1075,7 +1113,7 @@ W_LABELS = {"w_max_5s": "Pointe 5 s", "w15": "15 min", "w30": "30 min",
 
 
 def tab_velo(store):
-    hist = store.read(ACTIVITIES)
+    hist = lire(store, ACTIVITIES)
     if hist.empty:
         st.info("Aucune activité. Importe ton historique depuis Réglages.")
         return
@@ -1218,10 +1256,10 @@ def tab_velo(store):
 # ── Onglet 3 : préparation de course ─────────────────────────────────────────
 
 def tab_course(store, hr_rest, hr_max):
-    hist = store.read(ACTIVITIES)
-    bins = store.read(SLOPE_BINS)
+    hist = lire(store, ACTIVITIES)
+    bins = lire(store, SLOPE_BINS)
 
-    saved = store.read(COURSES)
+    saved = lire(store, COURSES)
     up = st.file_uploader("Trace de la course (GPX)", type=["gpx", "tcx", "fit"],
                           key="race")
 
@@ -1263,7 +1301,7 @@ def tab_course(store, hr_rest, hr_max):
                   "dt", "speed", "gap", "cum_time", "slope_bin", "walking",
                   "p_met", "hr_cost", "ele", "lat", "lon", "t", "hr", "cad",
                   "power"]].copy()
-        store.upsert(COURSES, pd.DataFrame([{
+        ecrire(store, COURSES, pd.DataFrame([{
             "course_id": re.sub(r"[^A-Za-z0-9]+", "_", nom)[:60],
             "nom": nom,
             "distance_km": float(d["dist"].sum() / 1000),
@@ -1280,7 +1318,7 @@ def tab_course(store, hr_rest, hr_max):
 
 
 def _course_view(store, d, hist, hr_rest, hr_max, nom=""):
-    bins = store.read(SLOPE_BINS)
+    bins = lire(store, SLOPE_BINS)
 
     dist = float(d["dist"].sum() / 1000)
     dplus = float(d["d_plus"].sum())
@@ -1358,7 +1396,7 @@ def _ravitos_en_base(store, nom_course: str):
     if not nom_course:
         return None
     try:
-        c = store.read(COURSES)
+        c = lire(store, COURSES)
         if c.empty or "reperes" not in c.columns:
             return None
         ligne = c[c["nom"].astype(str) == str(nom_course)]
@@ -1376,7 +1414,7 @@ def _ravitos_vers_base(store, nom_course: str, marques: pd.DataFrame) -> None:
     propre = marques.dropna(subset=["km"]).copy()
     propre["nom"] = propre["nom"].fillna("Repère").astype(str)
     propre["km"] = propre["km"].astype(float)
-    store.upsert(COURSES, pd.DataFrame([{
+    ecrire(store, COURSES, pd.DataFrame([{
         "course_id": re.sub(r"[^A-Za-z0-9]+", "_", nom_course)[:60],
         "nom": nom_course,
         "reperes": json.dumps(propre[["nom", "km"]].to_dict("records"),
@@ -1587,9 +1625,9 @@ def tab_plan(store):
         st.info("Dépose le plan HTML pour l'activer.")
         return
 
-    journal = store.read(JOURNAL)
+    journal = lire(store, JOURNAL)
     rec = plan_mod.merge_journal(
-        plan_mod.reconcile(p, store.read(ACTIVITIES)), journal)
+        plan_mod.reconcile(p, lire(store, ACTIVITIES)), journal)
     today = pd.Timestamp.now().normalize()
 
     semaines = sorted(rec["semaine"].dropna().unique())
@@ -1694,7 +1732,7 @@ def tab_plan(store):
                 "maj": pd.Timestamp.now(),
             } for x in saisies]).drop_duplicates(subset=["planned_key"],
                                                  keep="last")
-            store.upsert(JOURNAL, maj, key="planned_key")
+            ecrire(store, JOURNAL, maj, key="planned_key")
             st.success("Enregistré dans Supabase — visible sur tous "
                        "tes appareils.")
             st.rerun()
@@ -1753,7 +1791,7 @@ def _plan_mobile(store, sem, r, w, COULEUR):
                 "maj": pd.Timestamp.now(),
             } for x in saisies]).drop_duplicates(subset=["planned_key"],
                                                  keep="last")
-            store.upsert(JOURNAL, maj, key="planned_key")
+            ecrire(store, JOURNAL, maj, key="planned_key")
             st.success("Enregistré dans Supabase.")
             st.rerun()
 
@@ -1882,7 +1920,7 @@ def tab_reglages(store, hr_rest, hr_max):
         st.info("Connecte Strava ci-dessus pour synchroniser.")
 
     st.subheader("Disciplines")
-    inc = archive.coherence_disciplines(store.read(ACTIVITIES))
+    inc = archive.coherence_disciplines(lire(store, ACTIVITIES))
     if inc.empty:
         note("Aucune incohérence entre discipline déclarée et profil.")
     else:
