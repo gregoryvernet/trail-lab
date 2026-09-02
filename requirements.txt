@@ -1,0 +1,11 @@
+# Versions non figées : Python 3.14 n'a pas de paquet précompilé pour les
+# versions anciennes de pandas, et pip tenterait alors une compilation qui
+# exige Visual Studio. On laisse pip choisir ce qui est disponible.
+streamlit
+pandas
+numpy
+plotly
+gpxpy
+fitparse
+supabase
+requests

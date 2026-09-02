@@ -1,0 +1,52 @@
+﻿planned_key,date,semaine,objectif_semaine,sport,nature,titre,duree_min_bas,duree_min_haut,dplus_bas,dplus_haut,seance_cle,consigne
+s1-d1,2026-08-24,1,"Reprise spécifique, déjà assez soutenue",renfo,Renforcement,Repos + renfo,30.0,40.0,,,False,"Squat, fentes, soulevé de terre jambes semi-tendues, mollets, gainage."
+s1-d2,2026-08-25,1,"Reprise spécifique, déjà assez soutenue",trail,Qualitative,Course qualitative,70.0,70.0,,,False,"20′ EF + 8 × 2′ en côte à intensité soutenue, récupération en descente + 10′ retour au calme."
+s1-d3,2026-08-26,1,"Reprise spécifique, déjà assez soutenue",velo,Vélo,Vélo,90.0,120.0,,,False,"Endurance, parcours vallonné."
+s1-d4,2026-08-27,1,"Reprise spécifique, déjà assez soutenue",trail,Endurance fondamentale,Course EF,60.0,70.0,,,False,Facile.
+s1-d5,2026-08-28,1,"Reprise spécifique, déjà assez soutenue",velo,Vélo,Vélo,60.0,90.0,,,False,"Très facile, ou repos."
+s1-d6,2026-08-29,1,"Reprise spécifique, déjà assez soutenue",trail,Sortie longue,Trail long,165.0,180.0,600.0,900.0,True,"600 – 900 D+. Rando-course : montées marchées activement, course sur le plat et les descentes."
+s2-d1,2026-08-31,2,"Bloc vélo long, volume de course réduit",repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
+s2-d2,2026-09-01,2,"Bloc vélo long, volume de course réduit",trail,Qualitative,Côtes,75.0,75.0,,,False,"20′ EF + 10 × 3′ en côte, intensité soutenue mais contrôlée, récupération en descente + retour au calme."
+s2-d3,2026-09-02,2,"Bloc vélo long, volume de course réduit",trail,Endurance fondamentale,Course EF + renfo,70.0,75.0,,,False,"Facile, terrain vallonné. Renfo jambes + gainage à la suite."
+s2-d4,2026-09-03,2,"Bloc vélo long, volume de course réduit",velo,Vélo,Vélo,75.0,75.0,600.0,900.0,False,"Endurance, 600 – 900 D+."
+s2-d5,2026-09-03,2,"Bloc vélo long, volume de course réduit",velo,Vélo,Vélo,90.0,90.0,,,False,Facile.
+s2-d6,2026-09-04,2,"Bloc vélo long, volume de course réduit",repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
+s2-d7,2026-09-05,2,"Bloc vélo long, volume de course réduit",velo,Vélo,Vélo long,240.0,300.0,1500.0,1500.0,True,Sortie longue : ~100 km / 1 500 D+.
+s2-d8,2026-09-06,2,"Bloc vélo long, volume de course réduit",trail,Endurance fondamentale,Course,45.0,80.0,,,False,"EF ou trail facile, à moduler selon les jambes."
+s3-d1,2026-09-07,3,Premier vrai bloc spécifique,renfo,Renforcement,Repos + renfo,30.0,40.0,,,False,Séance structurée complète.
+s3-d2,2026-09-08,3,Premier vrai bloc spécifique,trail,Qualitative,Seuil vallonné,75.0,75.0,,,False,"20′ EF + 3 × 10′ au seuil sur terrain vallonné, récupération 2′ + retour au calme."
+s3-d3,2026-09-09,3,Premier vrai bloc spécifique,velo,Vélo,Vélo,120.0,150.0,,,False,Endurance avec 3 × 10′ en montée à allure soutenue.
+s3-d4,2026-09-10,3,Premier vrai bloc spécifique,trail,Endurance fondamentale,Course EF,70.0,70.0,,,False,Facile.
+s3-d5,2026-09-11,3,Premier vrai bloc spécifique,repos,Repos,Repos ou vélo,60.0,60.0,,,False,"Très facile, uniquement si les jambes sont fraîches."
+s3-d6,2026-09-12,3,Premier vrai bloc spécifique,trail,Sortie longue,Trail long,225.0,225.0,900.0,1200.0,True,"900 – 1 200 D+. Dernière heure en endurance soutenue, sans aller dans le rouge."
+s4-d1,2026-09-14,4,Assimilation — semaine volontairement allégée,renfo,Renforcement,Repos + renfo,30.0,30.0,,,False,Version allégée.
+s4-d2,2026-09-15,4,Assimilation — semaine volontairement allégée,trail,Qualitative,Côtes courtes,70.0,70.0,,,False,"20′ EF + 12 × 2′ en côte, récupération en descente + 10′ retour au calme."
+s4-d3,2026-09-16,4,Assimilation — semaine volontairement allégée,velo,Vélo,Vélo,90.0,120.0,,,False,Endurance.
+s4-d4,2026-09-17,4,Assimilation — semaine volontairement allégée,trail,Endurance fondamentale,Course EF,60.0,60.0,,,False,Facile.
+s4-d5,2026-09-18,4,Assimilation — semaine volontairement allégée,repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
+s4-d6,2026-09-19,4,Assimilation — semaine volontairement allégée,trail,Sortie longue,Trail,165.0,180.0,600.0,900.0,False,"600 – 900 D+, très confortable."
+s5-d1,2026-09-21,5,Gros bloc spécifique Templiers,renfo,Renforcement,Repos + renfo,30.0,40.0,,,False,Séance structurée.
+s5-d2,2026-09-22,5,Gros bloc spécifique Templiers,trail,Qualitative,Seuil vallonné,80.0,80.0,,,False,"20′ EF + 2 × 15′ au seuil, 5′ récupération + 10′ retour au calme."
+s5-d3,2026-09-23,5,Gros bloc spécifique Templiers,velo,Vélo,Vélo,120.0,120.0,,,False,Endurance vallonnée.
+s5-d4,2026-09-24,5,Gros bloc spécifique Templiers,trail,Endurance fondamentale,Course EF,75.0,75.0,,,False,Facile.
+s5-d5,2026-09-25,5,Gros bloc spécifique Templiers,repos,Repos,Repos,0.0,0.0,,,False,Repos complet avant la sortie longue.
+s5-d6,2026-09-26,5,Gros bloc spécifique Templiers,trail,Sortie longue,Trail long,255.0,255.0,1000.0,1400.0,True,"1 000 – 1 400 D+. Rando-course, allure ultra dès le départ."
+s6-d1,2026-09-28,6,Semaine pic — la plus importante du cycle,repos,Repos,Repos,0.0,0.0,,,False,Mobilité légère.
+s6-d2,2026-09-29,6,Semaine pic — la plus importante du cycle,trail,Qualitative,Côtes longues,75.0,75.0,,,False,"20′ EF + 6 × 5′ en montée à allure soutenue mais régulière, récupération en descente."
+s6-d3,2026-09-30,6,Semaine pic — la plus importante du cycle,velo,Vélo,Vélo,90.0,120.0,,,False,Facile.
+s6-d4,2026-10-01,6,Semaine pic — la plus importante du cycle,trail,Endurance fondamentale,Course EF,60.0,60.0,,,False,Facile.
+s6-d5,2026-10-02,6,Semaine pic — la plus importante du cycle,repos,Repos,Repos complet,0.0,0.0,,,False,Rien.
+s6-d6,2026-10-03,6,Semaine pic — la plus importante du cycle,trail,Sortie longue,Très longue sortie trail,270.0,300.0,1200.0,1600.0,True,1 200 – 1 600 D+. Chercher un profil type Templiers : succession de montées / descentes plutôt qu’une seule grande ascension.
+s7-d1,2026-10-05,7,"Début d’affûtage — volume en baisse, intensité conservée",repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
+s7-d2,2026-10-06,7,"Début d’affûtage — volume en baisse, intensité conservée",trail,Qualitative,Course qualitative,60.0,60.0,,,False,"20′ EF + 3 × 8′ au seuil, récupération 2′ + retour au calme."
+s7-d3,2026-10-07,7,"Début d’affûtage — volume en baisse, intensité conservée",velo,Vélo,Vélo,90.0,90.0,,,False,Facile.
+s7-d4,2026-10-08,7,"Début d’affûtage — volume en baisse, intensité conservée",trail,Endurance fondamentale,Course EF,60.0,60.0,,,False,Facile.
+s7-d5,2026-10-09,7,"Début d’affûtage — volume en baisse, intensité conservée",repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
+s7-d6,2026-10-10,7,"Début d’affûtage — volume en baisse, intensité conservée",trail,Sortie longue,Trail,150.0,165.0,500.0,800.0,False,"500 – 800 D+, allure facile."
+s8-d1,2026-10-12,8,Semaine de course,repos,Repos,Repos,0.0,0.0,,,False,"Repos complet, éventuellement 10 – 15′ de mobilité."
+s8-d2,2026-10-13,8,Semaine de course,trail,Qualitative,Course qualitative,55.0,55.0,,,True,"20′ EF + 3 × 5′ à allure seuil contrôlée, récup 2′, puis retour au calme."
+s8-d3,2026-10-14,8,Semaine de course,velo,Vélo,Vélo facile,60.0,75.0,,,False,"Très tranquille, Z1/Z2. Si fatigue → repos."
+s8-d4,2026-10-15,8,Semaine de course,trail,Endurance fondamentale,Footing activation,40.0,45.0,,,False,Très facile + 4 à 5 accélérations progressives de 20″.
+s8-d5,2026-10-16,8,Semaine de course,repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
+s8-d6,2026-10-17,8,Semaine de course,trail,Endurance fondamentale,Activation,20.0,25.0,,,False,Footing très facile + 3 à 4 accélérations de 15 – 20″. À faire uniquement si tu aimes courir la veille d’une course.
+course,2026-10-18,8,Semaine de course,trail,Course objectif,Trail des Templiers,,,3400.0,3400.0,True,80 km - 3 400 D+.

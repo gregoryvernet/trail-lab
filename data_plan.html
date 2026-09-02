@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trail des Templiers — plan 8 semaines · carnet de suivi</title>
+<style>
+:root{
+  --paper:#EFEDE4; --card:#FAF9F4; --ink:#1F2C27; --soft:#5C665F;
+  --bistre:#9A6636; --forest:#3E6146; --water:#2E6B8C; --flag:#B23A2B;
+  --stone:#D7D2C3; --hair:#C9C3B2;
+  --display:"Bahnschrift","DIN Alternate","Avenir Next Condensed","Roboto Condensed","DejaVu Sans Condensed","Arial Narrow",sans-serif;
+  --body:"Palatino Linotype",Palatino,"Book Antiqua","Charter","Bitstream Charter",Georgia,serif;
+  --mono:Consolas,"SF Mono","DejaVu Sans Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--body);font-size:16px;line-height:1.55;
+  background-image:
+    repeating-linear-gradient(78deg,transparent 0 46px,rgba(154,102,54,.055) 46px 47px),
+    repeating-linear-gradient(-12deg,transparent 0 62px,rgba(154,102,54,.04) 62px 63px);
+}
+.wrap{max-width:1000px;margin:0 auto;padding:0 22px 80px}
+
+/* ---------- hero ---------- */
+.hero{padding:52px 0 26px}
+.eyebrow{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.22em;
+  font-size:12px;color:var(--bistre);margin:0 0 14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap
+}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--hair);min-width:30px}
+h1{
+  font-family:var(--display);font-weight:700;text-transform:uppercase;
+  font-size:clamp(40px,8.2vw,86px);line-height:.92;letter-spacing:-.005em;
+  margin:0 0 18px;
+}
+/* titre sur une seule ligne, calee sur toute la largeur quelle que soit la police */
+.h1line{display:block;width:100%;height:auto;overflow:visible}
+.h1line text{
+  font-family:var(--display);font-weight:700;font-size:90px;
+  fill:currentColor;letter-spacing:0
+}
+h1 .thin{display:block;font-weight:400;color:var(--soft);font-size:.42em;letter-spacing:.16em;margin-top:12px}
+.facts{
+  display:flex;flex-wrap:wrap;gap:0 26px;align-items:baseline;
+  font-family:var(--mono);font-size:13.5px;color:var(--soft);
+  border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:11px 0;margin:0 0 28px
+}
+.facts b{color:var(--ink);font-weight:700}
+.facts .cd{color:var(--flag);font-weight:700}
+.lede{font-size:18px;max-width:none;margin:0 0 34px;color:#33403A}
+.lede em{font-style:italic;color:var(--bistre)}
+
+/* ---------- profil ---------- */
+.profil-box{background:var(--card);border:1px solid var(--hair);padding:22px 18px 14px;margin:0 0 14px}
+.profil-box h2{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.18em;font-size:12px;
+  color:var(--bistre);margin:0 0 4px;font-weight:700
+}
+.profil-box .sub{margin:0 0 12px;font-size:14px;color:var(--soft)}
+.profil{width:100%;height:auto;display:block;overflow:visible}
+.profil .gl{stroke:var(--hair);stroke-width:1;stroke-dasharray:2 5}
+.profil .galt{font-family:var(--mono);font-size:10px;fill:#9A9382;text-anchor:end}
+.profil .a-tot{fill:rgba(46,107,140,.16)}
+.profil .hach{stroke:rgba(46,107,140,.22);stroke-width:1}
+.profil .a-run{fill:rgba(62,97,70,.5)}
+.profil .l-tot{fill:none;stroke:var(--water);stroke-width:2}
+.profil .l-run{fill:none;stroke:var(--forest);stroke-width:2.4}
+.profil .tick{stroke:var(--hair);stroke-width:1}
+.profil .dot{fill:var(--card);stroke:var(--water);stroke-width:2}
+.profil .wk{font-family:var(--display);font-size:15px;font-weight:700;fill:var(--ink);text-anchor:middle;letter-spacing:.06em}
+.profil .wkh{font-family:var(--mono);font-size:10.5px;fill:var(--soft);text-anchor:middle}
+.profil .racel{stroke:var(--flag);stroke-width:1.4;stroke-dasharray:4 3}
+.profil .racet{font-family:var(--display);font-size:12px;font-weight:700;fill:var(--flag);text-anchor:end;letter-spacing:.14em}
+.profil .pdot{fill:var(--forest);stroke:var(--card);stroke-width:1.5}
+.profil .peak{font-family:var(--display);font-size:11px;font-weight:700;fill:var(--forest);text-anchor:middle;letter-spacing:.16em}
+.legend{
+  display:flex;gap:22px;flex-wrap:wrap;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.12em;font-size:11px;color:var(--soft);margin:0 0 44px;padding-left:2px
+}
+.legend span{display:flex;align-items:center;gap:7px}
+.legend i{width:14px;height:9px;display:inline-block}
+.legend .k-run{background:rgba(62,97,70,.5);border:1px solid var(--forest)}
+.legend .k-bike{background:rgba(46,107,140,.16);border:1px solid var(--water)}
+
+/* ---------- principe ---------- */
+.principe{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);
+  border:1px solid var(--hair);margin:0 0 48px
+}
+.principe div{background:var(--card);padding:18px 20px}
+.principe dt{font-family:var(--mono);font-size:26px;color:var(--bistre);line-height:1}
+.principe dd{margin:6px 0 0;font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:12.5px}
+.principe p{margin:4px 0 0;font-size:14px;color:var(--soft);line-height:1.4}
+
+/* ---------- semaines ---------- */
+.rule{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.24em;font-size:12px;
+  color:var(--bistre);display:flex;align-items:center;gap:14px;margin:0 0 20px
+}
+.rule::after{content:"";flex:1;height:1px;background:var(--hair)}
+.week{background:var(--card);border:1px solid var(--hair);margin:0 0 18px;position:relative}
+.week.is-peak{border-color:var(--forest);border-width:1.5px}
+.week.is-race{border-color:var(--flag);border-width:1.5px}
+.week.is-now{box-shadow:0 0 0 3px rgba(154,102,54,.2)}
+.week.is-now::before{
+  content:"cette semaine";position:absolute;top:-9px;left:64px;background:var(--bistre);color:#fff;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:10px;padding:2px 8px
+}
+.w-head{display:grid;grid-template-columns:64px 1fr auto;gap:16px;align-items:center;padding:16px 20px 14px;border-bottom:1px solid var(--stone)}
+.w-num{
+  font-family:var(--display);font-size:40px;font-weight:700;line-height:1;color:var(--bistre);
+  border-right:1px solid var(--hair);padding-right:16px;text-align:center
+}
+.is-peak .w-num{color:var(--forest)}
+.is-race .w-num{color:var(--flag)}
+.w-id h2{font-family:var(--display);text-transform:uppercase;letter-spacing:.05em;font-size:20px;margin:0;font-weight:700}
+.w-obj{margin:2px 0 0;font-size:14.5px;color:var(--soft);font-style:italic}
+.w-load{text-align:right;min-width:190px}
+.w-bar{display:flex;height:7px;background:#E7E4D9;width:100%;margin-bottom:6px}
+.w-bar i{background:var(--forest);display:block}
+.w-bar b{background:rgba(46,107,140,.35);display:block;border-left:1px solid var(--card)}
+.w-figs{margin:0;font-family:var(--mono);font-size:11.5px;color:var(--soft);white-space:nowrap}
+.w-figs .f-run{color:var(--forest)}
+.w-figs .f-bike{color:var(--water)}
+.w-figs .sep{padding:0 6px;color:var(--hair)}
+.w-note{
+  margin:0;padding:11px 20px 11px 22px;font-size:14.5px;color:#3B4741;background:rgba(154,102,54,.07);
+  border-bottom:1px solid var(--stone);border-left:3px solid var(--bistre)
+}
+.days{list-style:none;margin:0;padding:0}
+.day{
+  display:grid;grid-template-columns:74px 178px 96px 1fr;gap:14px;align-items:baseline;
+  padding:9px 20px;border-bottom:1px solid #EAE7DC;position:relative
+}
+.day:last-child{border-bottom:0}
+.day::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent}
+.t-velo::before{background:rgba(46,107,140,.55)}
+.t-long::before,.t-qual::before,.t-ef::before{background:rgba(62,97,70,.55)}
+.t-renfo::before{background:rgba(154,102,54,.5)}
+.t-race::before{background:var(--flag)}
+.d-date{font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-size:13px;color:var(--soft)}
+.d-title{font-family:var(--display);text-transform:uppercase;letter-spacing:.045em;font-size:14.5px;font-weight:700}
+.t-velo .d-title{color:var(--water)}
+.t-long .d-title,.t-qual .d-title{color:var(--forest)}
+.t-repos .d-title{color:#8C9089;font-weight:400}
+.t-race .d-title{color:var(--flag);font-size:17px}
+.d-dur{font-family:var(--mono);font-size:12.5px;color:var(--ink);white-space:nowrap}
+.t-race .d-dur{color:var(--flag);font-weight:700}
+.d-txt{font-size:15px;color:#3B4741}
+.day.is-key{background:rgba(62,97,70,.055)}
+.t-race{background:rgba(178,58,43,.07)}
+.keymark{
+  font-family:var(--display);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:#fff;background:var(--forest);padding:1px 5px;margin-left:8px;vertical-align:2px
+}
+.race-banner{
+  display:block;text-align:center;padding:26px 20px 24px;background:#1F2C27;color:#F0EDE2;list-style:none
+}
+.race-banner span{display:block}
+.rb-date{font-family:var(--display);text-transform:uppercase;letter-spacing:.22em;font-size:11px;color:#D9A66A}
+.rb-title{font-family:var(--display);text-transform:uppercase;font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.02;color:#fff;margin:6px 0 8px}
+.rb-figs{font-family:var(--mono);font-size:14px;color:#C8A87E;letter-spacing:.04em}
+.callout{background:#1F2C27;color:#E8E5DA;padding:22px 24px;margin:0 0 18px;border-left:4px solid var(--bistre)}
+.callout h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.16em;font-size:12.5px;margin:0 0 8px;color:#D9A66A;font-weight:700}
+.callout p{margin:0;font-size:15.5px;line-height:1.6;max-width:72ch}
+.callout b{color:#fff}
+
+/* ---------- notes de bas de plan ---------- */
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:44px}
+.note{background:var(--card);border:1px solid var(--hair);padding:20px 22px}
+.note h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:13px;margin:0 0 10px;color:var(--bistre)}
+.note p{margin:0 0 10px;font-size:15px}
+.note p:last-child{margin-bottom:0}
+.note ul{margin:0;padding-left:18px;font-size:15px}
+.note li{margin-bottom:4px}
+.note ul.ranked{list-style:none;padding-left:2px}
+.note ul.ranked li{display:flex;gap:9px}
+.note .num{font-family:var(--mono);color:var(--bistre)}
+.note.wide{grid-column:1 / -1}
+.eq{font-family:var(--mono);font-size:14px;background:rgba(154,102,54,.09);padding:8px 12px;display:inline-block;margin:6px 0}
+footer{margin-top:46px;padding-top:16px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:11.5px;color:#8C8878;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* ---------- responsive ---------- */
+@media (max-width:820px){
+  .principe{grid-template-columns:1fr}
+  .notes{grid-template-columns:1fr}
+  .w-head{grid-template-columns:48px 1fr;row-gap:10px}
+  .w-num{font-size:30px;padding-right:12px}
+  .w-load{grid-column:1 / -1;text-align:left;min-width:0}
+  .day{grid-template-columns:64px 1fr;row-gap:2px;padding:11px 16px}
+  .d-dur{grid-column:2;font-size:12px;color:var(--soft)}
+  .d-txt{grid-column:1 / -1;padding-left:0}
+  .week.is-now::before{left:16px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .l-run,.l-tot{stroke-dasharray:2600;stroke-dashoffset:2600;animation:draw 1.6s ease-out .2s forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+}
+a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bistre);outline-offset:3px}
+
+/* ---------- impression ---------- */
+@page{size:A4;margin:12mm 11mm}
+@media print{
+  body{background:#fff;font-size:10.5pt}
+  .wrap{max-width:none;padding:0}
+  .hero{padding:0 0 12px}
+  h1{font-size:40pt}
+  .week,.callout,.note,.profil-box{break-inside:avoid;page-break-inside:avoid}
+  .week.is-now{box-shadow:none}
+  .week.is-now::before{display:none}
+  .lede{font-size:10.5pt;max-width:none;margin-bottom:16px}
+  .notes{margin-top:16px;grid-template-columns:1fr 1fr}
+  footer{margin-top:16px}
+  /* la largeur A4 passe sous le point de rupture mobile : on restaure la grille */
+  .w-head{grid-template-columns:48px 1fr auto;row-gap:0;padding:9px 12px 8px}
+  .w-num{font-size:26pt;padding-right:10px}
+  .w-id h2{font-size:13pt}
+  .w-obj{font-size:9pt}
+  .w-load{grid-column:auto;text-align:right;min-width:150px}
+  .w-figs{font-size:7.5pt}
+  .w-note{padding:7px 12px;font-size:9pt}
+  .day{grid-template-columns:58px 158px 78px 1fr;row-gap:0;padding:4.5px 12px}
+  .d-date{font-size:8.5pt}
+  .d-title{font-size:9.5pt}
+  .d-dur{grid-column:auto;font-size:8pt;color:var(--ink)}
+  .d-txt{grid-column:auto;font-size:9.5pt}
+  .principe{break-inside:avoid;grid-template-columns:repeat(3,1fr);margin-bottom:22px}
+  .principe div{padding:10px 12px}
+  .principe dt{font-size:17pt}
+  .principe p{font-size:8.5pt}
+  .profil-box{padding:14px 12px 8px;margin-bottom:8px}
+  .legend{margin-bottom:22px;font-size:8pt}
+  .week{margin-bottom:11px}
+  .callout{padding:14px 16px;margin-bottom:11px}
+  .callout p{font-size:9.5pt}
+  .race-banner{padding:16px 12px}
+  .note{padding:11px 13px}
+  .note p,.note ul{font-size:9pt;margin-bottom:7px}
+  .note h3{font-size:10pt;margin-bottom:6px}
+  .note.wide{padding:9px 13px}
+  .notes{gap:10px}
+  .eq{font-size:9pt;padding:5px 9px}
+  .rule{margin-bottom:12px;break-after:avoid-page;page-break-after:avoid}
+  .facts{font-size:8.5pt;gap:0 16px}
+}
+/* ================= module de suivi ================= */
+.day{grid-template-columns:26px 74px 168px 92px 1fr 52px}
+.d-check{display:flex;align-items:center;justify-content:flex-start;align-self:center}
+.chk{
+  appearance:none;-webkit-appearance:none;margin:0;width:15px;height:15px;
+  border:1.5px solid var(--hair);background:var(--card);cursor:pointer;position:relative;flex:0 0 auto
+}
+.chk:hover{border-color:var(--bistre)}
+.chk:checked{background:var(--forest);border-color:var(--forest)}
+.chk:checked::after{
+  content:"";position:absolute;left:3.5px;top:.5px;width:5px;height:9px;
+  border:solid #fff;border-width:0 1.8px 1.8px 0;transform:rotate(40deg)
+}
+.chk:focus-visible{outline:2px solid var(--bistre);outline-offset:2px}
+.day.is-done{background:rgba(62,97,70,.075)}
+.day.is-done .d-title,.day.is-done .d-date{opacity:.62}
+.day.is-done .d-txt{opacity:.55}
+.day.is-done.t-repos{background:rgba(62,97,70,.04)}
+.d-more{
+  grid-column:6;grid-row:1;justify-self:end;align-self:center;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:9.5px;
+  color:var(--soft);background:transparent;border:1px solid var(--hair);
+  padding:2px 7px;cursor:pointer;display:inline-flex;gap:5px;align-items:center;line-height:1.5
+}
+.d-more:hover{border-color:var(--bistre);color:var(--bistre)}
+.d-more-i{font-family:var(--mono);font-size:11px;line-height:1}
+.day.is-open .d-more-i{visibility:hidden;position:relative}
+.day.is-open .d-more-i::after{content:"−";visibility:visible;position:absolute;left:0;top:0}
+.day.has-data .d-more{border-color:var(--bistre);color:var(--bistre)}
+.d-log{display:none;grid-column:1 / -1;margin:6px 0 2px;
+  grid-template-columns:190px 96px 1fr;gap:10px 14px;align-items:end}
+.day.is-open .d-log{display:grid}
+.d-log label{display:flex;flex-direction:column;gap:3px;min-width:0}
+.d-log label span{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.13em;font-size:9.5px;color:var(--soft)
+}
+.d-log input{
+  font-family:var(--body);font-size:14px;color:var(--ink);background:#fff;
+  border:1px solid var(--hair);padding:5px 8px;width:100%;min-width:0
+}
+.d-log .in-time{font-family:var(--mono);font-size:13px}
+.d-log input:focus{outline:none;border-color:var(--bistre);box-shadow:0 0 0 2px rgba(154,102,54,.13)}
+.out-delta{font-family:var(--mono);font-size:13px;color:var(--soft);padding:5px 2px;display:block;white-space:nowrap}
+.out-delta.pos{color:var(--water)}
+.out-delta.neg{color:var(--flag)}
+
+/* bandeau hebdo */
+.w-track{
+  display:flex;align-items:center;gap:14px;padding:8px 20px;
+  border-bottom:1px solid var(--stone);background:rgba(62,97,70,.035)
+}
+.wt-bar{flex:0 0 96px;height:5px;background:#E7E4D9}
+.wt-bar i{display:block;height:100%;background:var(--forest);transition:width .18s ease}
+.wt-figs{margin:0;font-family:var(--mono);font-size:11.5px;color:var(--soft)}
+.wt-figs b{color:var(--ink)}
+.wt-figs .sep{padding:0 7px;color:var(--hair)}
+.wt-delta.pos{color:var(--water)}
+.wt-delta.neg{color:var(--flag)}
+.week.is-complete .w-num{color:var(--forest)}
+.week.is-complete .wt-bar i{background:var(--forest)}
+
+/* barre de pilotage globale */
+.tracker{
+  background:var(--card);border:1px solid var(--hair);border-left:4px solid var(--bistre);
+  padding:16px 20px 14px;margin:0 0 26px
+}
+.tracker h2{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.18em;font-size:12px;
+  color:var(--bistre);margin:0 0 12px;font-weight:700
+}
+.tk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair);margin:0 0 12px}
+.tk-grid div{background:var(--card);padding:9px 12px}
+.tk-grid dt{font-family:var(--mono);font-size:20px;color:var(--ink);line-height:1.1}
+.tk-grid dd{margin:2px 0 0;font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:10px;color:var(--soft)}
+.tk-grid .accent{color:var(--forest)}
+.tk-grid .warn{color:var(--flag)}
+.tk-bar{height:6px;background:#E7E4D9;margin:0 0 12px}
+.tk-bar i{display:block;height:100%;background:var(--forest);transition:width .2s ease}
+.tk-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tk-actions button{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:10px;
+  background:transparent;border:1px solid var(--hair);color:var(--soft);padding:5px 10px;cursor:pointer
+}
+.tk-actions button:hover{border-color:var(--bistre);color:var(--bistre)}
+.tk-actions .danger:hover{border-color:var(--flag);color:var(--flag)}
+.tk-actions .primary{background:var(--forest);border-color:var(--forest);color:#fff}
+.tk-actions .primary:hover{background:#345239;border-color:#345239;color:#fff}
+.tk-actions .primary[disabled]{opacity:.55;cursor:progress}
+.tk-state{
+  margin:10px 0 0;font-family:var(--mono);font-size:11.5px;color:var(--soft);
+  display:flex;flex-wrap:wrap;gap:0 14px;align-items:baseline
+}
+.tk-state b{color:var(--ink);font-weight:700}
+.tk-state .ko{color:var(--flag)}
+.tk-state .ok{color:var(--forest)}
+.tk-state button{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:9.5px;
+  background:transparent;border:1px solid var(--hair);color:var(--bistre);padding:2px 7px;cursor:pointer
+}
+.tk-hint{margin:10px 0 0;font-size:13px;color:var(--soft)}
+.tk-hint code{font-family:var(--mono);font-size:12px;background:rgba(154,102,54,.09);padding:1px 4px}
+.tk-save{font-family:var(--mono);font-size:10.5px;color:var(--forest);opacity:0;transition:opacity .3s}
+.tk-save.on{opacity:1}
+
+/* log jour J */
+.rb-log{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:16px;text-align:left}
+.rb-log label{display:flex;flex-direction:column;gap:4px}
+.rb-log label span{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:9.5px;color:#D9A66A
+}
+.rb-log input{
+  font-family:var(--mono);font-size:14px;background:rgba(255,255,255,.07);color:#fff;
+  border:1px solid rgba(217,166,106,.45);padding:6px 9px;min-width:160px
+}
+.rb-log .rb-note input{min-width:320px;font-family:var(--body)}
+.rb-log input:focus{outline:none;border-color:#D9A66A}
+
+@media (max-width:820px){
+  .day{grid-template-columns:24px 1fr}
+  .d-date{grid-column:2}
+  .d-title{grid-column:2}
+  .d-dur{grid-column:2}
+  .d-txt{grid-column:1 / -1}
+  .d-more{grid-column:1 / -1;grid-row:auto;justify-self:start;margin-top:4px}
+  .d-log{grid-template-columns:1fr;gap:8px}
+  .tk-grid{grid-template-columns:1fr 1fr}
+  .w-track{flex-wrap:wrap;gap:8px;padding:8px 16px}
+  .rb-log .rb-note input{min-width:0;width:100%}
+}
+
+@media print{
+  .day{grid-template-columns:18px 58px 152px 74px 1fr 0;row-gap:0}
+  .d-check{grid-column:1;grid-row:1;align-self:baseline}
+  .d-date{grid-column:2;grid-row:1}
+  .d-title{grid-column:3;grid-row:1}
+  .d-dur{grid-column:4;grid-row:1}
+  .d-txt{grid-column:5;grid-row:1}
+  .chk{width:10px;height:10px;border-color:#8C8878;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .chk:checked{background:var(--forest)}
+  .d-more,.tk-actions,.tk-hint,.tk-state{display:none !important}
+  .d-log{display:none !important}
+  .day:not([data-rest]) .d-log{
+    display:grid !important;grid-template-columns:96px 1fr;gap:0 12px;margin:1px 0 2px
+  }
+  .d-log .lg-delta{display:none}
+  .d-log label span{display:none}
+  .d-log input{border:0;border-bottom:.7pt solid var(--hair);padding:0 0 1pt;font-size:8.5pt;background:none;height:11pt}
+  .d-log input::placeholder{color:transparent}
+  .day.has-data .d-log .lg-delta{display:flex}
+  .day.has-data .d-log{grid-template-columns:96px 62px 1fr}
+  .day.has-data .out-delta{font-size:8.5pt;padding:0}
+  .day.is-done{background:rgba(62,97,70,.07);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .w-track{padding:5px 12px}
+  .wt-figs{font-size:7.5pt}
+  .tracker{padding:10px 12px;margin-bottom:14px;break-inside:avoid}
+  .tk-grid{grid-template-columns:repeat(4,1fr)}
+  .tk-bar{display:none}
+  .tk-grid dt{font-size:14pt}
+  .tk-grid dd{font-size:7.5pt}
+  .rb-log{margin-top:10px}
+  .rb-log input{font-size:9pt;background:none;border-color:rgba(217,166,106,.6)}
+}
+
+
+/* --- v2 : troisieme segment (renfo) dans la barre de charge --- */
+.w-bar u{background:rgba(154,102,54,.5);display:block;border-left:1px solid var(--card)}
+.w-figs .f-renfo{color:var(--bistre)}
+.w-figs .f-tot{color:var(--ink)}
+
+</style>
+<script id="suivi-data" type="application/json">{"plan": "Templiers 2026", "version": 4, "savedAt": "2026-08-31T09:00:00.000Z", "data": {"s1-d4": {"done": true, "time": "55", "note": "Jambes lourdes, footing pas agréable"}, "s1-d3": {"done": true, "time": "1h35", "note": "Bonnes sensations, un peu perdu sur le parcours. 37km, 400m D+"}, "s1-d5": {"done": true, "time": "1h03", "note": "Plus de force à mi-parcours, 26,5km, 300m D+"}, "s1-d2": {"done": true, "time": "1h02", "note": "EF pur"}, "s1-d1": {"done": true, "time": "20", "note": "Renfo"}, "s1-d6": {"done": true, "time": "2h30", "note": "Dur sur les 1e 45min, puis beaucoup mieux ensuite"}}}</script>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow">Préparation · 8 semaines · 24 août → 18 octobre 2026</p>
+  <h1>
+    <svg class="h1line" viewBox="0 0 1000 84" role="img" aria-label="Trail des Templiers">
+      <text x="0" y="75" textLength="1000" lengthAdjust="spacing">TRAIL DES TEMPLIERS</text>
+    </svg>
+    <span class="thin">80 km — 3 400 D+</span>
+  </h1>
+  <p class="facts">
+    <span>Départ <b>dim. 18 octobre 2026</b></span>
+    <span>Structure <b>3 course · 1–2 vélo · 1 renfo</b></span>
+    <span>Sortie la plus longue <b>4h30 – 5h</b></span>
+    <span id="countdown" class="cd">J–58</span>
+  </p>
+  <p class="lede">
+    Le principe du cycle&#8239;: <em>utiliser le vélo pour faire monter la caisse sans surcharger le genou</em>.
+    On arrive aux Templiers avec une vraie capacité à courir 4 – 5 h, sans chercher à reproduire
+    les volumes trail du plan Oisans. Ce qui monte, c’est d’abord le temps passé sur les jambes,
+    puis le spécifique. L’intensité, elle, reste à peu près stable d’un bout à l’autre.
+  </p>
+</header>
+
+<section class="profil-box">
+  <h2>Profil de charge — 8 semaines</h2>
+  <p class="sub">Heures hebdomadaires, <b>borne basse</b> de chaque fourchette, recalculées depuis le détail des séances. Sans les sorties du dimanche, le vélo est devenu un appoint et la charge repose sur la course — sauf en semaine 2, bâtie autour d’une sortie longue à vélo.</p>
+  <svg class="profil" viewBox="0 0 1080 300" role="img"
+     aria-label="Profil de charge hebdomadaire, borne basse des fourchettes : la course culmine en fin de bloc autour de 7 heures, le v&#233;lo n'apporte plus qu'un appoint de 1 &#224; 2 sorties, puis tout chute pour l'aff&#251;tage.">
+  <defs>
+    <pattern id="hach" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="7" class="hach"/>
+    </pattern>
+  </defs>
+  <line x1="44" y1="202.7" x2="1036" y2="202.7" class="gl"/><text x="35" y="206.2" class="galt">2h</text><line x1="44" y1="163.4" x2="1036" y2="163.4" class="gl"/><text x="35" y="166.9" class="galt">4h</text><line x1="44" y1="124.1" x2="1036" y2="124.1" class="gl"/><text x="35" y="127.6" class="galt">6h</text><line x1="44" y1="84.8" x2="1036" y2="84.8" class="gl"/><text x="35" y="88.3" class="galt">8h</text><line x1="44" y1="45.5" x2="1036" y2="45.5" class="gl"/><text x="35" y="49.0" class="galt">10h</text>
+  <path d="M 44.0 86.4 C 67.6 79.9, 138.5 52.9, 185.7 47.1 C 233.0 41.4, 280.2 42.2, 327.4 52.1 C 374.7 61.9, 421.9 105.0, 469.1 106.1 C 516.4 107.2, 563.6 63.0, 610.9 58.6 C 658.1 54.2, 705.3 69.0, 752.6 79.9 C 799.8 90.8, 847.0 106.6, 894.3 124.1 C 941.5 141.6, 1012.4 174.6, 1036.0 184.7 L 1036.0 242 L 44.0 242 Z" class="a-tot"/>
+  <path d="M 44.0 86.4 C 67.6 79.9, 138.5 52.9, 185.7 47.1 C 233.0 41.4, 280.2 42.2, 327.4 52.1 C 374.7 61.9, 421.9 105.0, 469.1 106.1 C 516.4 107.2, 563.6 63.0, 610.9 58.6 C 658.1 54.2, 705.3 69.0, 752.6 79.9 C 799.8 90.8, 847.0 106.6, 894.3 124.1 C 941.5 141.6, 1012.4 174.6, 1036.0 184.7 L 1036.0 242 L 44.0 242 Z" fill="url(#hach)"/>
+  <path d="M 44.0 145.4 C 67.6 151.1, 138.5 183.9, 185.7 179.8 C 233.0 175.7, 280.2 126.6, 327.4 120.8 C 374.7 115.1, 421.9 147.6, 469.1 145.4 C 516.4 143.2, 563.6 113.7, 610.9 107.7 C 658.1 101.7, 705.3 101.7, 752.6 109.4 C 799.8 117.0, 847.0 137.7, 894.3 153.6 C 941.5 169.4, 1012.4 195.9, 1036.0 204.3 L 1036.0 242 L 44.0 242 Z" class="a-run"/>
+  <path d="M 44.0 86.4 C 67.6 79.9, 138.5 52.9, 185.7 47.1 C 233.0 41.4, 280.2 42.2, 327.4 52.1 C 374.7 61.9, 421.9 105.0, 469.1 106.1 C 516.4 107.2, 563.6 63.0, 610.9 58.6 C 658.1 54.2, 705.3 69.0, 752.6 79.9 C 799.8 90.8, 847.0 106.6, 894.3 124.1 C 941.5 141.6, 1012.4 174.6, 1036.0 184.7" class="l-tot"/>
+  <path d="M 44.0 145.4 C 67.6 151.1, 138.5 183.9, 185.7 179.8 C 233.0 175.7, 280.2 126.6, 327.4 120.8 C 374.7 115.1, 421.9 147.6, 469.1 145.4 C 516.4 143.2, 563.6 113.7, 610.9 107.7 C 658.1 101.7, 705.3 101.7, 752.6 109.4 C 799.8 117.0, 847.0 137.7, 894.3 153.6 C 941.5 169.4, 1012.4 195.9, 1036.0 204.3" class="l-run"/>
+  <line x1="44.0" y1="242" x2="44.0" y2="249" class="tick"/><text x="44.0" y="265" class="wk">S1</text><text x="44.0" y="280" class="wkh">7h55</text><circle cx="44.0" cy="86.4" r="3.2" class="dot"/><line x1="185.7" y1="242" x2="185.7" y2="249" class="tick"/><text x="185.7" y="265" class="wk">S2</text><text x="185.7" y="280" class="wkh">9h55</text><circle cx="185.7" cy="47.1" r="3.2" class="dot"/><line x1="327.4" y1="242" x2="327.4" y2="249" class="tick"/><text x="327.4" y="265" class="wk">S3</text><text x="327.4" y="280" class="wkh">9h40</text><circle cx="327.4" cy="52.1" r="3.2" class="dot"/><line x1="469.1" y1="242" x2="469.1" y2="249" class="tick"/><text x="469.1" y="265" class="wk">S4</text><text x="469.1" y="280" class="wkh">6h55</text><circle cx="469.1" cy="106.1" r="3.2" class="dot"/><line x1="610.9" y1="242" x2="610.9" y2="249" class="tick"/><text x="610.9" y="265" class="wk">S5</text><text x="610.9" y="280" class="wkh">9h20</text><circle cx="610.9" cy="58.6" r="3.2" class="dot"/><line x1="752.6" y1="242" x2="752.6" y2="249" class="tick"/><text x="752.6" y="265" class="wk">S6</text><text x="752.6" y="280" class="wkh">8h15</text><circle cx="752.6" cy="79.9" r="3.2" class="dot"/><line x1="894.3" y1="242" x2="894.3" y2="249" class="tick"/><text x="894.3" y="265" class="wk">S7</text><text x="894.3" y="280" class="wkh">6h00</text><circle cx="894.3" cy="124.1" r="3.2" class="dot"/><line x1="1036.0" y1="242" x2="1036.0" y2="249" class="tick"/><text x="1036.0" y="265" class="wk">S8</text><text x="1036.0" y="280" class="wkh">2h55</text><circle cx="1036.0" cy="184.7" r="3.2" class="dot"/>
+  <line x1="1036.0" y1="18" x2="1036.0" y2="242" class="racel"/>
+  <text x="1026.0" y="14" class="racet">18 OCT.</text>
+  <circle cx="752.6" cy="109.4" r="3.2" class="pdot"/>
+  <text x="752.6" y="96.4" class="peak">PIC COURSE &#183; S6</text>
+</svg>
+</section>
+<p class="legend">
+  <span><i class="k-run"></i>Course à pied</span>
+  <span><i class="k-bike"></i>Vélo</span>
+  <span>Ligne pleine = total hebdomadaire</span>
+</p>
+
+<dl class="principe">
+  <div><dt>3</dt><dd>séances de course</dd><p>Une qualitative, une EF, une sortie longue. C’est le socle non négociable.</p></div>
+  <div><dt>1–2</dt><dd>sorties vélo</dd><p>Endurance Z2, en semaine uniquement. Le dimanche est libre : le vélo complète la charge, il ne l’absorbe plus.</p></div>
+  <div><dt>1</dt><dd>séance de renfo</dd><p>Structurée, une fois par semaine, plus 10–15 min d’appoint. Volume réduit à partir de la semaine 6.</p></div>
+</dl>
+
+<section class="tracker" id="tracker">
+  <h2>Suivi d’exécution</h2>
+  <dl class="tk-grid">
+    <div><dt><span id="tk-done">0</span><span style="font-size:13px;color:#8C8878">/40</span></dt><dd>séances validées</dd></div>
+    <div><dt class="accent" id="tk-real">0h00</dt><dd>temps effectif cumulé</dd></div>
+    <div><dt id="tk-plan">79h59</dt><dd>prévu sur séances chronométrées</dd></div>
+    <div><dt id="tk-delta">—</dt><dd>écart réalisé / prévu</dd></div>
+  </dl>
+  <div class="tk-bar"><i id="tk-progress" style="width:0%"></i></div>
+  <div class="tk-actions">
+    <button type="button" id="tk-save-file" class="primary">Sauvegarder</button>
+    <button type="button" id="tk-folder">Dossier…</button>
+    <button type="button" id="tk-expand">Tout déplier</button>
+    <button type="button" id="tk-collapse">Tout replier</button>
+    <button type="button" id="tk-json">Exporter JSON</button>
+    <button type="button" id="tk-csv">Exporter CSV</button>
+    <button type="button" id="tk-import">Importer JSON</button>
+    <button type="button" id="tk-reset" class="danger">Réinitialiser</button>
+    <span class="tk-save" id="tk-save">enregistré</span>
+    <input type="file" id="tk-file" accept=".json,application/json" style="display:none">
+  </div>
+  <p class="tk-state" id="tk-state"></p>
+  <p class="tk-hint">Coche la séance, ouvre <code>note</code> pour saisir le temps effectif (<code>2h35</code>, <code>155′</code> ou <code>2:35</code>) et un commentaire. Le temps de référence est la <b>borne basse</b> de la fourchette de chaque séance (total plan : 60h55 pour 40 séances). <b>Sauvegarder</b> ou <code>Ctrl+S</code> écrit une copie autonome — plan + suivi — numérotée <code>_1</code>, <code>_2</code>… Lancé via <code>Lancer_plan_Templiers.bat</code>, le fichier écrit directement dans <code>Documents\Perso\Trail</code> sans aucune autorisation à redonner.</p>
+</section>
+<p class="rule">Le cycle, semaine par semaine</p>
+
+  <section class="week" data-start="2026-08-24" data-end="2026-08-30" id="s1">
+    <header class="w-head">
+      <span class="w-num">01</span>
+      <div class="w-id">
+        <h2>24 – 30 août</h2>
+        <p class="w-obj">Reprise spécifique, déjà assez soutenue</p>
+      </div>
+      <div class="w-load">
+        <div class="w-bar"><i style="width:49.6%"></i><b style="width:25.2%"></b><u style="width:5.0%"></u></div>
+        <p class="w-figs"><span class="f-run">4h55 course</span><span class="sep">·</span><span class="f-bike">2h30 vélo</span><span class="sep">·</span><span class="f-renfo">0h30 renfo</span><span class="sep">·</span><b class="f-tot">7h55</b></p>
+      </div>
+    </header>
+    <div class="w-track" data-week="s1">
+      <div class="wt-bar"><i style="width:0%"></i></div>
+      <p class="wt-figs"><span class="wt-done">0/6</span> séances<span class="sep">·</span>réalisé <b class="wt-real">0h00</b><span class="sep">·</span>prévu <span class="wt-planned">0h00</span><span class="sep">·</span>écart <b class="wt-delta">—</b><span class="sep">·</span>plan semaine <span class="wt-plan">7h55</span></p>
+    </div>
+    <ul class="days">
+      <li class="day t-renfo" data-day="s1-d1" data-plan="30" data-planhi="40" data-label="Repos + renfo" data-date="Lun 24">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s1-d1" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Lun 24</span>
+        <span class="d-title">Repos + renfo</span>
+        <span class="d-dur">30–40′</span>
+        <span class="d-txt">Squat, fentes, soulevé de terre jambes semi-tendues, mollets, gainage.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s1-d1" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s1-d1">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-qual" data-day="s1-d2" data-plan="70" data-planhi="70" data-label="Course qualitative" data-date="Mar 25">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s1-d2" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mar 25</span>
+        <span class="d-title">Course qualitative</span>
+        <span class="d-dur">1h10</span>
+        <span class="d-txt">20′ EF + 8 × 2′ en côte à intensité soutenue, récupération en descente + 10′ retour au calme.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s1-d2" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s1-d2">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo" data-day="s1-d3" data-plan="90" data-planhi="120" data-label="Vélo" data-date="Mer 26">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s1-d3" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mer 26</span>
+        <span class="d-title">Vélo</span>
+        <span class="d-dur">1h30 – 2h</span>
+        <span class="d-txt">Endurance, parcours vallonné.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s1-d3" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s1-d3">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-ef" data-day="s1-d4" data-plan="60" data-planhi="70" data-label="Course EF" data-date="Jeu 27">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s1-d4" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Jeu 27</span>
+        <span class="d-title">Course EF</span>
+        <span class="d-dur">1h – 1h10</span>
+        <span class="d-txt">Facile.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s1-d4" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s1-d4">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo" data-day="s1-d5" data-plan="60" data-planhi="90" data-label="Vélo" data-date="Ven 28">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s1-d5" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Ven 28</span>
+        <span class="d-title">Vélo</span>
+        <span class="d-dur">1h – 1h30</span>
+        <span class="d-txt">Très facile, ou repos.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s1-d5" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s1-d5">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-long is-key" data-day="s1-d6" data-plan="165" data-planhi="180" data-label="Trail longclé" data-date="Sam 29">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s1-d6" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Sam 29</span>
+        <span class="d-title">Trail long<span class="keymark" title="Séance clé">clé</span></span>
+        <span class="d-dur">2h45 – 3h</span>
+        <span class="d-txt">600 – 900 D+. Rando-course&#8239;: montées marchées activement, course sur le plat et les descentes.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s1-d6" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s1-d6">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <section class="week" data-start="2026-08-31" data-end="2026-09-06" id="s2">
+    <header class="w-head">
+      <span class="w-num">02</span>
+      <div class="w-id">
+        <h2>31 août – 6 septembre</h2>
+        <p class="w-obj">Bloc vélo long, volume de course réduit</p>
+      </div>
+      <div class="w-load">
+        <div class="w-bar"><i style="width:31.9%"></i><b style="width:68.1%"></b><u style="width:0.0%"></u></div>
+        <p class="w-figs"><span class="f-run">3h10 course</span><span class="sep">·</span><span class="f-bike">6h45 vélo</span><span class="sep">·</span><b class="f-tot">9h55</b></p>
+      </div>
+    </header>
+    <div class="w-track" data-week="s2">
+      <div class="wt-bar"><i style="width:0%"></i></div>
+      <p class="wt-figs"><span class="wt-done">0/6</span> séances<span class="sep">·</span>réalisé <b class="wt-real">0h00</b><span class="sep">·</span>prévu <span class="wt-planned">0h00</span><span class="sep">·</span>écart <b class="wt-delta">—</b><span class="sep">·</span>plan semaine <span class="wt-plan">9h55</span></p>
+    </div>
+    <ul class="days">
+      <li class="day t-repos" data-day="s2-d1" data-plan="0" data-planhi="0" data-label="Repos" data-date="Lun 31" data-rest="1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s2-d1" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Lun 31</span>
+        <span class="d-title">Repos</span>
+        <span class="d-dur">—</span>
+        <span class="d-txt">Repos complet.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s2-d1" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s2-d1">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-qual" data-day="s2-d2" data-plan="75" data-planhi="75" data-label="Côtes" data-date="Mar 1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s2-d2" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mar 1</span>
+        <span class="d-title">Côtes</span>
+        <span class="d-dur">1h15</span>
+        <span class="d-txt">20′ EF + 10 × 3′ en côte, intensité soutenue mais contrôlée, récupération en descente + retour au calme.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s2-d2" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s2-d2">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-ef" data-day="s2-d3" data-plan="70" data-planhi="75" data-label="Course EF + renfo" data-date="Mer 2">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s2-d3" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mer 2</span>
+        <span class="d-title">Course EF + renfo</span>
+        <span class="d-dur">1h10 – 1h15</span>
+        <span class="d-txt">Facile, terrain vallonné. Renfo jambes + gainage à la suite.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s2-d3" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s2-d3">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo" data-day="s2-d4" data-plan="75" data-planhi="75" data-label="Vélo" data-date="Jeu 3">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s2-d4" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Jeu 3</span>
+        <span class="d-title">Vélo</span>
+        <span class="d-dur">1h15</span>
+        <span class="d-txt">Endurance, 600 – 900 D+.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s2-d4" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s2-d4">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo" data-day="s2-d5" data-plan="90" data-planhi="90" data-label="Vélo" data-date="Jeu 3">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s2-d5" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Jeu 3</span>
+        <span class="d-title">Vélo</span>
+        <span class="d-dur">1h30</span>
+        <span class="d-txt">Facile.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s2-d5" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s2-d5">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-repos" data-day="s2-d6" data-plan="0" data-planhi="0" data-label="Repos" data-date="Ven 4" data-rest="1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s2-d6" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Ven 4</span>
+        <span class="d-title">Repos</span>
+        <span class="d-dur">—</span>
+        <span class="d-txt">Repos complet.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s2-d6" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s2-d6">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo is-key" data-day="s2-d7" data-plan="240" data-planhi="300" data-label="Vélo longclé" data-date="Sam 5">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s2-d7" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Sam 5</span>
+        <span class="d-title">Vélo long<span class="keymark" title="Séance clé">clé</span></span>
+        <span class="d-dur">4h – 5h</span>
+        <span class="d-txt">Sortie longue : ~100 km / 1 500 D+.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s2-d7" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s2-d7">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-ef" data-day="s2-d8" data-plan="45" data-planhi="80" data-label="Course" data-date="Dim 6">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s2-d8" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Dim 6</span>
+        <span class="d-title">Course</span>
+        <span class="d-dur">45′ – 1h20</span>
+        <span class="d-txt">EF ou trail facile, à moduler selon les jambes.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s2-d8" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s2-d8">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <section class="week" data-start="2026-09-07" data-end="2026-09-13" id="s3">
+    <header class="w-head">
+      <span class="w-num">03</span>
+      <div class="w-id">
+        <h2>7 – 13 septembre</h2>
+        <p class="w-obj">Premier vrai bloc spécifique</p>
+      </div>
+      <div class="w-load">
+        <div class="w-bar"><i style="width:62.2%"></i><b style="width:30.3%"></b><u style="width:5.0%"></u></div>
+        <p class="w-figs"><span class="f-run">6h10 course</span><span class="sep">·</span><span class="f-bike">3h00 vélo</span><span class="sep">·</span><span class="f-renfo">0h30 renfo</span><span class="sep">·</span><b class="f-tot">9h40</b></p>
+      </div>
+    </header>
+    <div class="w-track" data-week="s3">
+      <div class="wt-bar"><i style="width:0%"></i></div>
+      <p class="wt-figs"><span class="wt-done">0/6</span> séances<span class="sep">·</span>réalisé <b class="wt-real">0h00</b><span class="sep">·</span>prévu <span class="wt-planned">0h00</span><span class="sep">·</span>écart <b class="wt-delta">—</b><span class="sep">·</span>plan semaine <span class="wt-plan">9h40</span></p>
+    </div>
+<p class="w-note">Le samedi devient la séance qui compte&#8239;: apprendre à courir proprement <em>après</em> 2h30 – 3h d’effort.</p>
+    <ul class="days">
+      <li class="day t-renfo" data-day="s3-d1" data-plan="30" data-planhi="40" data-label="Repos + renfo" data-date="Lun 7">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s3-d1" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Lun 7</span>
+        <span class="d-title">Repos + renfo</span>
+        <span class="d-dur">30–40′</span>
+        <span class="d-txt">Séance structurée complète.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s3-d1" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s3-d1">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-qual" data-day="s3-d2" data-plan="75" data-planhi="75" data-label="Seuil vallonné" data-date="Mar 8">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s3-d2" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mar 8</span>
+        <span class="d-title">Seuil vallonné</span>
+        <span class="d-dur">1h15</span>
+        <span class="d-txt">20′ EF + 3 × 10′ au seuil sur terrain vallonné, récupération 2′ + retour au calme.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s3-d2" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s3-d2">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo" data-day="s3-d3" data-plan="120" data-planhi="150" data-label="Vélo" data-date="Mer 9">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s3-d3" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mer 9</span>
+        <span class="d-title">Vélo</span>
+        <span class="d-dur">2h – 2h30</span>
+        <span class="d-txt">Endurance avec 3 × 10′ en montée à allure soutenue.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s3-d3" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s3-d3">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-ef" data-day="s3-d4" data-plan="70" data-planhi="70" data-label="Course EF" data-date="Jeu 10">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s3-d4" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Jeu 10</span>
+        <span class="d-title">Course EF</span>
+        <span class="d-dur">1h10</span>
+        <span class="d-txt">Facile.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s3-d4" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s3-d4">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-repos" data-day="s3-d5" data-plan="60" data-planhi="60" data-label="Repos ou vélo" data-date="Ven 11">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s3-d5" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Ven 11</span>
+        <span class="d-title">Repos ou vélo</span>
+        <span class="d-dur">1h</span>
+        <span class="d-txt">Très facile, uniquement si les jambes sont fraîches.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s3-d5" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s3-d5">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-long is-key" data-day="s3-d6" data-plan="225" data-planhi="225" data-label="Trail longclé" data-date="Sam 12">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s3-d6" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Sam 12</span>
+        <span class="d-title">Trail long<span class="keymark" title="Séance clé">clé</span></span>
+        <span class="d-dur">3h45</span>
+        <span class="d-txt">900 – 1 200 D+. Dernière heure en endurance soutenue, sans aller dans le rouge.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s3-d6" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s3-d6">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <section class="week" data-start="2026-09-14" data-end="2026-09-20" id="s4">
+    <header class="w-head">
+      <span class="w-num">04</span>
+      <div class="w-id">
+        <h2>14 – 20 septembre</h2>
+        <p class="w-obj">Assimilation — semaine volontairement allégée</p>
+      </div>
+      <div class="w-load">
+        <div class="w-bar"><i style="width:49.6%"></i><b style="width:15.1%"></b><u style="width:5.0%"></u></div>
+        <p class="w-figs"><span class="f-run">4h55 course</span><span class="sep">·</span><span class="f-bike">1h30 vélo</span><span class="sep">·</span><span class="f-renfo">0h30 renfo</span><span class="sep">·</span><b class="f-tot">6h55</b></p>
+      </div>
+    </header>
+    <div class="w-track" data-week="s4">
+      <div class="wt-bar"><i style="width:0%"></i></div>
+      <p class="wt-figs"><span class="wt-done">0/5</span> séances<span class="sep">·</span>réalisé <b class="wt-real">0h00</b><span class="sep">·</span>prévu <span class="wt-planned">0h00</span><span class="sep">·</span>écart <b class="wt-delta">—</b><span class="sep">·</span>plan semaine <span class="wt-plan">6h55</span></p>
+    </div>
+<p class="w-note">Semaine plus légère assumée&#8239;: elle sert à absorber les trois premières, pas à en rajouter.</p>
+    <ul class="days">
+      <li class="day t-renfo" data-day="s4-d1" data-plan="30" data-planhi="30" data-label="Repos + renfo" data-date="Lun 14">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s4-d1" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Lun 14</span>
+        <span class="d-title">Repos + renfo</span>
+        <span class="d-dur">30′</span>
+        <span class="d-txt">Version allégée.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s4-d1" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s4-d1">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-qual" data-day="s4-d2" data-plan="70" data-planhi="70" data-label="Côtes courtes" data-date="Mar 15">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s4-d2" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mar 15</span>
+        <span class="d-title">Côtes courtes</span>
+        <span class="d-dur">1h10</span>
+        <span class="d-txt">20′ EF + 12 × 2′ en côte, récupération en descente + 10′ retour au calme.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s4-d2" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s4-d2">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo" data-day="s4-d3" data-plan="90" data-planhi="120" data-label="Vélo" data-date="Mer 16">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s4-d3" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mer 16</span>
+        <span class="d-title">Vélo</span>
+        <span class="d-dur">1h30 – 2h</span>
+        <span class="d-txt">Endurance.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s4-d3" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s4-d3">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-ef" data-day="s4-d4" data-plan="60" data-planhi="60" data-label="Course EF" data-date="Jeu 17">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s4-d4" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Jeu 17</span>
+        <span class="d-title">Course EF</span>
+        <span class="d-dur">1h</span>
+        <span class="d-txt">Facile.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s4-d4" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s4-d4">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-repos" data-day="s4-d5" data-plan="0" data-planhi="0" data-label="Repos" data-date="Ven 18" data-rest="1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s4-d5" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Ven 18</span>
+        <span class="d-title">Repos</span>
+        <span class="d-dur">—</span>
+        <span class="d-txt">Repos complet.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s4-d5" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s4-d5">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-long" data-day="s4-d6" data-plan="165" data-planhi="180" data-label="Trail" data-date="Sam 19">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s4-d6" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Sam 19</span>
+        <span class="d-title">Trail</span>
+        <span class="d-dur">2h45 – 3h</span>
+        <span class="d-txt">600 – 900 D+, très confortable.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s4-d6" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s4-d6">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <section class="week" data-start="2026-09-21" data-end="2026-09-27" id="s5">
+    <header class="w-head">
+      <span class="w-num">05</span>
+      <div class="w-id">
+        <h2>21 – 27 septembre</h2>
+        <p class="w-obj">Gros bloc spécifique Templiers</p>
+      </div>
+      <div class="w-load">
+        <div class="w-bar"><i style="width:68.9%"></i><b style="width:20.2%"></b><u style="width:5.0%"></u></div>
+        <p class="w-figs"><span class="f-run">6h50 course</span><span class="sep">·</span><span class="f-bike">2h00 vélo</span><span class="sep">·</span><span class="f-renfo">0h30 renfo</span><span class="sep">·</span><b class="f-tot">9h20</b></p>
+      </div>
+    </header>
+    <div class="w-track" data-week="s5">
+      <div class="wt-bar"><i style="width:0%"></i></div>
+      <p class="wt-figs"><span class="wt-done">0/5</span> séances<span class="sep">·</span>réalisé <b class="wt-real">0h00</b><span class="sep">·</span>prévu <span class="wt-planned">0h00</span><span class="sep">·</span>écart <b class="wt-delta">—</b><span class="sep">·</span>plan semaine <span class="wt-plan">9h20</span></p>
+    </div>
+    <ul class="days">
+      <li class="day t-renfo" data-day="s5-d1" data-plan="30" data-planhi="40" data-label="Repos + renfo" data-date="Lun 21">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s5-d1" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Lun 21</span>
+        <span class="d-title">Repos + renfo</span>
+        <span class="d-dur">30–40′</span>
+        <span class="d-txt">Séance structurée.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s5-d1" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s5-d1">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-qual" data-day="s5-d2" data-plan="80" data-planhi="80" data-label="Seuil vallonné" data-date="Mar 22">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s5-d2" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mar 22</span>
+        <span class="d-title">Seuil vallonné</span>
+        <span class="d-dur">1h20</span>
+        <span class="d-txt">20′ EF + 2 × 15′ au seuil, 5′ récupération + 10′ retour au calme.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s5-d2" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s5-d2">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo" data-day="s5-d3" data-plan="120" data-planhi="120" data-label="Vélo" data-date="Mer 23">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s5-d3" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mer 23</span>
+        <span class="d-title">Vélo</span>
+        <span class="d-dur">2h</span>
+        <span class="d-txt">Endurance vallonnée.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s5-d3" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s5-d3">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-ef" data-day="s5-d4" data-plan="75" data-planhi="75" data-label="Course EF" data-date="Jeu 24">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s5-d4" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Jeu 24</span>
+        <span class="d-title">Course EF</span>
+        <span class="d-dur">1h15</span>
+        <span class="d-txt">Facile.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s5-d4" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s5-d4">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-repos" data-day="s5-d5" data-plan="0" data-planhi="0" data-label="Repos" data-date="Ven 25" data-rest="1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s5-d5" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Ven 25</span>
+        <span class="d-title">Repos</span>
+        <span class="d-dur">—</span>
+        <span class="d-txt">Repos complet avant la sortie longue.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s5-d5" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s5-d5">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-long is-key" data-day="s5-d6" data-plan="255" data-planhi="255" data-label="Trail longclé" data-date="Sam 26">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s5-d6" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Sam 26</span>
+        <span class="d-title">Trail long<span class="keymark" title="Séance clé">clé</span></span>
+        <span class="d-dur">4h15</span>
+        <span class="d-txt">1 000 – 1 400 D+. Rando-course, allure ultra dès le départ.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s5-d6" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s5-d6">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <aside class="callout"><h3>Comment courir la sortie de 4h15</h3><p>Elle se fait <em>comme une course</em>, pas comme une performance&#8239;: nutrition toutes les 25 – 30′, boisson régulière, marche active dans les grosses montées, course facile sur le roulant, descentes contrôlées. L’objectif n’est en aucun cas de faire 1 400 D+ à bloc.</p></aside>
+  <section class="week is-peak" data-start="2026-09-28" data-end="2026-10-04" id="s6">
+    <header class="w-head">
+      <span class="w-num">06</span>
+      <div class="w-id">
+        <h2>28 septembre – 4 octobre</h2>
+        <p class="w-obj">Semaine pic — la plus importante du cycle</p>
+      </div>
+      <div class="w-load">
+        <div class="w-bar"><i style="width:68.1%"></i><b style="width:15.1%"></b><u style="width:0.0%"></u></div>
+        <p class="w-figs"><span class="f-run">6h45 course</span><span class="sep">·</span><span class="f-bike">1h30 vélo</span><span class="sep">·</span><b class="f-tot">8h15</b></p>
+      </div>
+    </header>
+    <div class="w-track" data-week="s6">
+      <div class="wt-bar"><i style="width:0%"></i></div>
+      <p class="wt-figs"><span class="wt-done">0/4</span> séances<span class="sep">·</span>réalisé <b class="wt-real">0h00</b><span class="sep">·</span>prévu <span class="wt-planned">0h00</span><span class="sep">·</span>écart <b class="wt-delta">—</b><span class="sep">·</span>plan semaine <span class="wt-plan">8h15</span></p>
+    </div>
+    <ul class="days">
+      <li class="day t-repos" data-day="s6-d1" data-plan="0" data-planhi="0" data-label="Repos" data-date="Lun 28" data-rest="1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s6-d1" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Lun 28</span>
+        <span class="d-title">Repos</span>
+        <span class="d-dur">—</span>
+        <span class="d-txt">Mobilité légère.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s6-d1" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s6-d1">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-qual" data-day="s6-d2" data-plan="75" data-planhi="75" data-label="Côtes longues" data-date="Mar 29">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s6-d2" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mar 29</span>
+        <span class="d-title">Côtes longues</span>
+        <span class="d-dur">1h15</span>
+        <span class="d-txt">20′ EF + 6 × 5′ en montée à allure soutenue mais régulière, récupération en descente.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s6-d2" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s6-d2">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo" data-day="s6-d3" data-plan="90" data-planhi="120" data-label="Vélo" data-date="Mer 30">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s6-d3" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mer 30</span>
+        <span class="d-title">Vélo</span>
+        <span class="d-dur">1h30 – 2h</span>
+        <span class="d-txt">Facile.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s6-d3" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s6-d3">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-ef" data-day="s6-d4" data-plan="60" data-planhi="60" data-label="Course EF" data-date="Jeu 1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s6-d4" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Jeu 1</span>
+        <span class="d-title">Course EF</span>
+        <span class="d-dur">1h</span>
+        <span class="d-txt">Facile.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s6-d4" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s6-d4">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-repos" data-day="s6-d5" data-plan="0" data-planhi="0" data-label="Repos complet" data-date="Ven 2" data-rest="1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s6-d5" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Ven 2</span>
+        <span class="d-title">Repos complet</span>
+        <span class="d-dur">—</span>
+        <span class="d-txt">Rien.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s6-d5" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s6-d5">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-long is-key" data-day="s6-d6" data-plan="270" data-planhi="300" data-label="Très longue sortie trailclé" data-date="Sam 3">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s6-d6" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Sam 3</span>
+        <span class="d-title">Très longue sortie trail<span class="keymark" title="Séance clé">clé</span></span>
+        <span class="d-dur">4h30 – 5h</span>
+        <span class="d-txt">1 200 – 1 600 D+. Chercher un profil type Templiers&#8239;: succession de montées / descentes plutôt qu’une seule grande ascension.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s6-d6" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s6-d6">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <aside class="callout"><h3>Le découpage du samedi 3 octobre</h3><p><b>0 – 2h</b> très facile · <b>2h – 3h30</b> allure ultra · <b>3h30 – 5h</b> maintenir une allure propre malgré la fatigue. Finir cette sortie avec encore une réelle capacité à courir est le meilleur signal du cycle. Le temps passé sur les jambes prime sur la distance&#8239;: 4h30 – 5h &gt; 50 km à tout prix.</p></aside>
+  <section class="week" data-start="2026-10-05" data-end="2026-10-11" id="s7">
+    <header class="w-head">
+      <span class="w-num">07</span>
+      <div class="w-id">
+        <h2>5 – 11 octobre</h2>
+        <p class="w-obj">Début d’affûtage — volume en baisse, intensité conservée</p>
+      </div>
+      <div class="w-load">
+        <div class="w-bar"><i style="width:45.4%"></i><b style="width:15.1%"></b><u style="width:0.0%"></u></div>
+        <p class="w-figs"><span class="f-run">4h30 course</span><span class="sep">·</span><span class="f-bike">1h30 vélo</span><span class="sep">·</span><b class="f-tot">6h00</b></p>
+      </div>
+    </header>
+    <div class="w-track" data-week="s7">
+      <div class="wt-bar"><i style="width:0%"></i></div>
+      <p class="wt-figs"><span class="wt-done">0/4</span> séances<span class="sep">·</span>réalisé <b class="wt-real">0h00</b><span class="sep">·</span>prévu <span class="wt-planned">0h00</span><span class="sep">·</span>écart <b class="wt-delta">—</b><span class="sep">·</span>plan semaine <span class="wt-plan">6h00</span></p>
+    </div>
+<p class="w-note">La semaine doit se terminer avec la sensation de ne pas en avoir fait assez. C’est exactement l’objectif.</p>
+    <ul class="days">
+      <li class="day t-repos" data-day="s7-d1" data-plan="0" data-planhi="0" data-label="Repos" data-date="Lun 5" data-rest="1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s7-d1" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Lun 5</span>
+        <span class="d-title">Repos</span>
+        <span class="d-dur">—</span>
+        <span class="d-txt">Repos complet.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s7-d1" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s7-d1">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-qual" data-day="s7-d2" data-plan="60" data-planhi="60" data-label="Course qualitative" data-date="Mar 6">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s7-d2" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mar 6</span>
+        <span class="d-title">Course qualitative</span>
+        <span class="d-dur">1h</span>
+        <span class="d-txt">20′ EF + 3 × 8′ au seuil, récupération 2′ + retour au calme.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s7-d2" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s7-d2">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo" data-day="s7-d3" data-plan="90" data-planhi="90" data-label="Vélo" data-date="Mer 7">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s7-d3" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mer 7</span>
+        <span class="d-title">Vélo</span>
+        <span class="d-dur">1h30</span>
+        <span class="d-txt">Facile.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s7-d3" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s7-d3">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-ef" data-day="s7-d4" data-plan="60" data-planhi="60" data-label="Course EF" data-date="Jeu 8">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s7-d4" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Jeu 8</span>
+        <span class="d-title">Course EF</span>
+        <span class="d-dur">1h</span>
+        <span class="d-txt">Facile.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s7-d4" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s7-d4">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-repos" data-day="s7-d5" data-plan="0" data-planhi="0" data-label="Repos" data-date="Ven 9" data-rest="1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s7-d5" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Ven 9</span>
+        <span class="d-title">Repos</span>
+        <span class="d-dur">—</span>
+        <span class="d-txt">Repos complet.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s7-d5" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s7-d5">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-long" data-day="s7-d6" data-plan="150" data-planhi="165" data-label="Trail" data-date="Sam 10">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s7-d6" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Sam 10</span>
+        <span class="d-title">Trail</span>
+        <span class="d-dur">2h30 – 2h45</span>
+        <span class="d-txt">500 – 800 D+, allure facile.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s7-d6" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s7-d6">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <section class="week is-race" data-start="2026-10-12" data-end="2026-10-18" id="s8">
+    <header class="w-head">
+      <span class="w-num">08</span>
+      <div class="w-id">
+        <h2>12 – 18 octobre</h2>
+        <p class="w-obj">Semaine de course</p>
+      </div>
+      <div class="w-load">
+        <div class="w-bar"><i style="width:19.3%"></i><b style="width:10.1%"></b><u style="width:0.0%"></u></div>
+        <p class="w-figs"><span class="f-run">1h55 course</span><span class="sep">·</span><span class="f-bike">1h00 vélo</span><span class="sep">·</span><b class="f-tot">2h55</b></p>
+      </div>
+    </header>
+    <div class="w-track" data-week="s8">
+      <div class="wt-bar"><i style="width:0%"></i></div>
+      <p class="wt-figs"><span class="wt-done">0/4</span> séances<span class="sep">·</span>réalisé <b class="wt-real">0h00</b><span class="sep">·</span>prévu <span class="wt-planned">0h00</span><span class="sep">·</span>écart <b class="wt-delta">—</b><span class="sep">·</span>plan semaine <span class="wt-plan">2h55</span></p>
+    </div>
+<p class="w-note">Pas de séance le mercredi à la moindre sensation de fatigue. Rien ne se gagne cette semaine-là, tout peut s’y perdre.</p>
+    <ul class="days">
+      <li class="day t-repos" data-day="s8-d1" data-plan="0" data-planhi="0" data-label="Repos" data-date="Lun 12" data-rest="1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s8-d1" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Lun 12</span>
+        <span class="d-title">Repos</span>
+        <span class="d-dur">—</span>
+        <span class="d-txt">Repos complet, éventuellement 10 – 15′ de mobilité.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s8-d1" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s8-d1">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-qual is-key" data-day="s8-d2" data-plan="55" data-planhi="55" data-label="Course qualitative" data-date="Mar 13">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s8-d2" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mar 13</span>
+        <span class="d-title">Course qualitative</span>
+        <span class="d-dur">55′</span>
+        <span class="d-txt">20′ EF + 3 × 5′ à allure seuil contrôlée, récup 2′, puis retour au calme.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s8-d2" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s8-d2">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-velo" data-day="s8-d3" data-plan="60" data-planhi="75" data-label="Vélo facile" data-date="Mer 14">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s8-d3" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Mer 14</span>
+        <span class="d-title">Vélo facile</span>
+        <span class="d-dur">1h – 1h15</span>
+        <span class="d-txt">Très tranquille, Z1/Z2. Si fatigue → repos.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s8-d3" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s8-d3">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-ef" data-day="s8-d4" data-plan="40" data-planhi="45" data-label="Footing activation" data-date="Jeu 15">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s8-d4" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Jeu 15</span>
+        <span class="d-title">Footing activation</span>
+        <span class="d-dur">40 – 45′</span>
+        <span class="d-txt">Très facile + 4 à 5 accélérations progressives de 20″.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s8-d4" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s8-d4">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-repos" data-day="s8-d5" data-plan="0" data-planhi="0" data-label="Repos" data-date="Ven 16" data-rest="1">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s8-d5" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Ven 16</span>
+        <span class="d-title">Repos</span>
+        <span class="d-dur">—</span>
+        <span class="d-txt">Repos complet.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s8-d5" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s8-d5">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="day t-ef" data-day="s8-d6" data-plan="20" data-planhi="25" data-label="Activation" data-date="Sam 17">
+        <span class="d-check"><input type="checkbox" class="chk" id="chk_s8-d6" aria-label="Marquer la séance comme réalisée"></span>
+        <span class="d-date">Sam 17</span>
+        <span class="d-title">Activation</span>
+        <span class="d-dur">20 – 25′</span>
+        <span class="d-txt">Footing très facile + 3 à 4 accélérations de 15 – 20″. À faire uniquement si tu aimes courir la veille d’une course.</span>
+        <button type="button" class="d-more" aria-expanded="false" aria-controls="log_s8-d6" title="Temps effectif et commentaire"><span class="d-more-i">+</span><span class="d-more-t">note</span></button>
+        <div class="d-log" id="log_s8-d6">
+          <label class="lg-time"><span>Temps effectif</span><input type="text" class="in-time" inputmode="text" placeholder="ex. 2h35 ou 155′" aria-label="Temps effectif de la séance"></label>
+          <label class="lg-delta"><span>Écart</span><output class="out-delta">—</output></label>
+          <label class="lg-note"><span>Commentaire</span><input type="text" class="in-note" placeholder="Sensations, D+, genou, météo, nutrition…" aria-label="Commentaire de séance"></label>
+        </div>
+      </li>
+      <li class="race-banner">
+        <span class="rb-date">Dim 18 — jour J</span>
+        <span class="rb-title">Trail des Templiers</span>
+        <span class="rb-figs">80 km · 3 400 D+</span>
+      </li>
+    </ul>
+  </section>
+
+<div class="notes">
+
+  <section class="note">
+    <h3>Le vélo, mode d’emploi</h3>
+    <p>Z2 / endurance, cadence naturelle, sans chercher à faire exploser les watts. Les sorties du dimanche ayant été retirées, il ne reste en règle générale qu’une à deux sorties de semaine, de 1h30 à 2h. Seule exception : la semaine 2, bâtie autour d’une sortie longue de 4h à 5h le samedi.</p>
+    <p class="eq">vélo : 19h45 sur les 60h55 du cycle (32 %)</p>
+    <p>Le levier existe toujours, mais il a perdu 13h00 sur le cycle avec la suppression des dimanches. Si le genou tient, c’est là qu’il faudra remettre du volume ; sinon, le plan assume un volume total plus faible.</p>
+  </section>
+
+  <section class="note">
+    <h3>Le renforcement</h3>
+    <p>Une séance structurée par semaine, pas uniquement du squat lourd&#8239;:</p>
+    <ul>
+      <li>Squat — 3 × 5-8</li>
+      <li>Fentes bulgares — 3 × 6-8 par jambe</li>
+      <li>Soulevé de terre jambes semi-tendues — 3 × 6-8</li>
+      <li>Mollets — 3 × 10-15</li>
+      <li>Gainage — 3 séries</li>
+    </ul>
+    <p>Éventuellement 10 à 15 min d’appoint une seconde fois dans la semaine. À partir de la semaine 6, on réduit pour arriver frais.</p>
+  </section>
+
+  <section class="note">
+    <h3>Si une séance doit sauter</h3>
+    <p>Les week-ends chargés arrivent. L’ordre de priorité ne se discute pas au moment où on est fatigué,
+    il se décide maintenant&#8239;:</p>
+    <ul class="ranked">
+      <li><span class="num">1.</span> La sortie longue trail</li>
+      <li><span class="num">2.</span> La séance qualitative de course</li>
+      <li><span class="num">3.</span> La sortie vélo de semaine</li>
+    </ul>
+    <p>Le footing facile est de loin le plus remplaçable — le vélo fait le même travail.</p>
+  </section>
+
+  <section class="note">
+    <h3>Les deux signaux à surveiller</h3>
+    <ul>
+      <li>La douleur <b>pendant</b> la course</li>
+      <li>La réaction du genou <b>le lendemain et à J+2</b>, surtout après les longues descentes</li>
+    </ul>
+    <p>Si tout reste silencieux jusqu’à la semaine 5, les 4h30 – 5h de la semaine 6 deviennent
+    beaucoup plus sereines à engager.</p>
+    <p>À l’inverse, une réaction du genou ne se compense pas en supprimant le vélo&#8239;: on conserve
+    la charge aérobie sur le vélo et on baisse temporairement la course.</p>
+  </section>
+
+  <section class="note wide">
+    <h3>La règle qui tient tout le plan</h3>
+    <p>Ne jamais augmenter simultanément durée <span class="num">+</span> D+ <span class="num">+</span> intensité
+    sur une même semaine. On fait monter d’abord le temps sur les jambes, puis le spécifique&#8239;;
+    l’intensité reste relativement stable sur les huit semaines.</p>
+  </section>
+
+</div>
+
+<footer>
+  <span>Plan Templiers 2026 · 8 semaines · 24 août → 18 octobre</span>
+  <span>Course 39h10 · Vélo 19h45 · Renfo 2h00 · Total 60h55 · 40 séances (bornes basses)</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var race = new Date(2026,9,18);
+  var today = new Date(); today.setHours(0,0,0,0);
+  var d = Math.round((race - today)/86400000);
+  var el = document.getElementById('countdown');
+  if (el) el.textContent = d > 1 ? 'J–' + d : (d === 1 ? 'J–1' : (d === 0 ? 'Jour J' : 'Course passée'));
+  document.querySelectorAll('.week').forEach(function(w){
+    var s = new Date(w.dataset.start + 'T00:00:00');
+    var e = new Date(w.dataset.end + 'T23:59:59');
+    if (today >= s && today <= e) w.classList.add('is-now');
+  });
+})();
+</script>
+<script>
+
+(function(){
+  var KEY = 'templiers2026.suivi.v2';
+  var OLDKEY = 'templiers2026.suivi.v1';
+  var store = {};
+  var meta = {touchedAt:null, version:0};
+  var embedded = null, loadedFrom = '';
+  var mem = false;
+
+  function readEmbedded(){
+    var n = document.getElementById('suivi-data');
+    if(!n) return null;
+    try{
+      var j = JSON.parse(n.textContent || 'null');
+      return (j && j.data) ? j : null;
+    }catch(e){ return null; }
+  }
+
+  function load(){
+    var ls = null;
+    try{
+      var raw = window.localStorage.getItem(KEY);
+      if(raw) ls = JSON.parse(raw);
+      if(!ls){
+        var old = window.localStorage.getItem(OLDKEY);
+        if(old) ls = {data: JSON.parse(old), touchedAt: null, version: 0};
+      }
+    }catch(e){ mem = true; }
+    embedded = readEmbedded();
+    var tLs  = ls && ls.touchedAt ? Date.parse(ls.touchedAt) : 0;
+    var tEmb = embedded && embedded.savedAt ? Date.parse(embedded.savedAt) : 0;
+    var pick = null;
+    if(embedded && ls){
+      if(tEmb >= tLs){ pick = embedded; loadedFrom = 'fichier'; }
+      else { pick = ls; loadedFrom = 'navigateur'; }
+    } else if(embedded){ pick = embedded; loadedFrom = 'fichier'; }
+    else if(ls){ pick = ls; loadedFrom = 'navigateur'; }
+    store = (pick && pick.data) || {};
+    meta.touchedAt = pick ? (pick.touchedAt || pick.savedAt || null) : null;
+    meta.version = (pick && pick.version) || 0;
+  }
+
+  var saveTimer = null, flash = document.getElementById('tk-save');
+  function save(){
+    meta.touchedAt = new Date().toISOString();
+    if(!mem){
+      try{
+        window.localStorage.setItem(KEY, JSON.stringify(
+          {data: store, touchedAt: meta.touchedAt, version: meta.version}));
+      }catch(e){ mem = true; }
+    }
+    if(flash){
+      flash.textContent = mem ? 'stockage local indisponible \u2014 pense \u00e0 sauvegarder' : 'enregistr\u00e9';
+      flash.classList.add('on');
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function(){ flash.classList.remove('on'); }, 1400);
+    }
+    paintState();
+  }
+
+  /* ---------- dur\u00e9es ---------- */
+  function parseDur(s){
+    if(s == null) return null;
+    s = String(s).toLowerCase().replace(/[\s\u2009\u202f\u00a0]/g,'').replace(',','.')
+         .replace(/[\u2032\u2019]/g,"'").replace(/min(utes?)?/g,'').replace(/'/g,'');
+    if(!s) return null;
+    var m;
+    if((m = s.match(/^(\d+)[h:](\d{1,2})$/))) return parseInt(m[1],10)*60 + parseInt(m[2],10);
+    if((m = s.match(/^(\d+(?:\.\d+)?)h$/)))  return Math.round(parseFloat(m[1])*60);
+    if((m = s.match(/^(\d+(?:\.\d+)?)$/)))   return Math.round(parseFloat(m[1]));
+    return null;
+  }
+  function fmt(m){
+    m = Math.round(m);
+    var sign = m < 0 ? '\u2212' : '';
+    m = Math.abs(m);
+    return sign + Math.floor(m/60) + 'h' + ('0'+(m%60)).slice(-2);
+  }
+  function fmtSigned(m){
+    if(m === 0) return '\u00b10h00';
+    return (m > 0 ? '+' : '\u2212') + fmt(Math.abs(m)).replace('\u2212','');
+  }
+
+  var days = Array.prototype.slice.call(document.querySelectorAll('.day[data-day]'));
+
+  /* ---------- rendu d'une ligne ---------- */
+  function paintDay(li){
+    var id   = li.dataset.day;
+    var rec  = store[id] || {};
+    var chk  = li.querySelector('.chk');
+    var time = li.querySelector('.in-time');
+    var note = li.querySelector('.in-note');
+    var out  = li.querySelector('.out-delta');
+    if(chk)  chk.checked  = !!rec.done;
+    if(time) time.value   = rec.time || '';
+    if(note) note.value   = rec.note || '';
+    li.classList.toggle('is-done', !!rec.done);
+    var hasData = !!(rec.time || rec.note);
+    li.classList.toggle('has-data', hasData);
+    var plan = parseInt(li.dataset.plan || '0', 10);
+    var real = parseDur(rec.time);
+    if(out){
+      if(real == null){ out.textContent = '\u2014'; out.className = 'out-delta'; }
+      else if(!plan)  { out.textContent = fmt(real); out.className = 'out-delta'; }
+      else{
+        var d = real - plan;
+        out.textContent = fmtSigned(d);
+        out.className = 'out-delta ' + (d > 0 ? 'pos' : (d < 0 ? 'neg' : ''));
+      }
+    }
+    if(hasData && !li.classList.contains('is-open')) openDay(li, true);
+  }
+
+  function openDay(li, on){
+    li.classList.toggle('is-open', on);
+    var b = li.querySelector('.d-more');
+    if(b) b.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }
+
+  /* ---------- agr\u00e9gats ---------- */
+  function paintTotals(){
+    var gDone = 0, gReal = 0, gPlanDone = 0, gSess = 0;
+
+    document.querySelectorAll('.week[id]').forEach(function(wk){
+      var track = wk.querySelector('.w-track');
+      if(!track) return;
+      var list = Array.prototype.slice.call(wk.querySelectorAll('.day[data-day]'));
+      var sess = list.filter(function(l){ return !l.dataset.rest; });
+      var done = 0, real = 0, planDone = 0;
+      list.forEach(function(l){
+        var rec = store[l.dataset.day] || {};
+        var plan = parseInt(l.dataset.plan || '0', 10);
+        if(rec.done && !l.dataset.rest){ done++; }
+        var r = parseDur(rec.time);
+        if(r != null){ real += r; planDone += plan; }
+      });
+      gDone += done; gReal += real; gPlanDone += planDone; gSess += sess.length;
+
+      track.querySelector('.wt-done').textContent = done + '/' + sess.length;
+      track.querySelector('.wt-real').textContent = fmt(real);
+      track.querySelector('.wt-planned').textContent = fmt(planDone);
+      var bar = track.querySelector('.wt-bar i');
+      bar.style.width = (sess.length ? (100*done/sess.length) : 0) + '%';
+      var dEl = track.querySelector('.wt-delta');
+      if(real === 0 || planDone === 0){ dEl.textContent = '\u2014'; dEl.className = 'wt-delta'; }
+      else{
+        var d = real - planDone;
+        dEl.textContent = fmtSigned(d);
+        dEl.className = 'wt-delta ' + (d > 0 ? 'pos' : (d < 0 ? 'neg' : ''));
+      }
+      wk.classList.toggle('is-complete', sess.length > 0 && done === sess.length);
+    });
+
+    var elD = document.getElementById('tk-done');   if(elD) elD.textContent = gDone;
+    var elR = document.getElementById('tk-real');   if(elR) elR.textContent = fmt(gReal);
+    var elP = document.getElementById('tk-plan');   if(elP) elP.textContent = fmt(gPlanDone);
+    var elX = document.getElementById('tk-delta');
+    if(elX){
+      if(gReal === 0 || gPlanDone === 0){ elX.textContent = '\u2014'; elX.className = ''; }
+      else{
+        var gd = gReal - gPlanDone;
+        elX.textContent = fmtSigned(gd);
+        elX.className = gd > 0 ? 'accent' : (gd < 0 ? 'warn' : '');
+      }
+    }
+    var pb = document.getElementById('tk-progress');
+    if(pb) pb.style.width = (gSess ? (100*gDone/gSess) : 0) + '%';
+  }
+
+  function set(id, patch){
+    var rec = store[id] || {};
+    Object.keys(patch).forEach(function(k){
+      if(patch[k] === '' || patch[k] === false) delete rec[k]; else rec[k] = patch[k];
+    });
+    if(Object.keys(rec).length) store[id] = rec; else delete store[id];
+    save();
+  }
+
+  /* ---------- \u00e9v\u00e9nements ---------- */
+  days.forEach(function(li){
+    var id = li.dataset.day;
+    var chk = li.querySelector('.chk');
+    if(chk) chk.addEventListener('change', function(){
+      set(id, {done: chk.checked});
+      if(chk.checked) openDay(li, true);
+      paintDay(li); paintTotals();
+    });
+    var more = li.querySelector('.d-more');
+    if(more) more.addEventListener('click', function(){
+      openDay(li, !li.classList.contains('is-open'));
+      var t = li.querySelector('.in-time');
+      if(li.classList.contains('is-open') && t) t.focus();
+    });
+    var time = li.querySelector('.in-time');
+    if(time) time.addEventListener('input', function(){
+      set(id, {time: time.value.trim()}); paintDay(li); paintTotals();
+    });
+    var note = li.querySelector('.in-note');
+    if(note) note.addEventListener('input', function(){
+      set(id, {note: note.value}); paintDay(li); paintTotals();
+    });
+  });
+
+  /* jour J */
+  document.querySelectorAll('.rb-log input').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      var k = inp.classList.contains('in-time') ? 'time' : 'note';
+      var p = {}; p[k] = inp.value.trim();
+      set('race-final', p);
+    });
+  });
+
+  function paintAll(){
+    days.forEach(paintDay);
+    var rec = store['race-final'] || {};
+    var rt = document.querySelector('.rb-log .in-time');
+    var rn = document.querySelector('.rb-log .in-note');
+    if(rt) rt.value = rec.time || '';
+    if(rn) rn.value = rec.note || '';
+    paintTotals();
+  }
+
+  /* ---------- exports ---------- */
+  function download(name, mime, text){
+    var blob = new Blob([text], {type: mime + ';charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 500);
+  }
+  function stamp(){
+    var d = new Date();
+    return d.getFullYear() + ('0'+(d.getMonth()+1)).slice(-2) + ('0'+d.getDate()).slice(-2);
+  }
+  var byId = document.getElementById.bind(document);
+
+  if(byId('tk-json')) byId('tk-json').addEventListener('click', function(){
+    download('suivi_templiers_' + stamp() + '.json', 'application/json',
+      JSON.stringify({plan:'Templiers 2026', exported: new Date().toISOString(), data: store}, null, 2));
+  });
+
+  if(byId('tk-csv')) byId('tk-csv').addEventListener('click', function(){
+    var rows = [['Semaine','Jour','Seance','Prevu_min','Realise_min','Ecart_min','Fait','Commentaire']];
+    days.forEach(function(li){
+      var rec = store[li.dataset.day] || {};
+      var plan = parseInt(li.dataset.plan || '0', 10);
+      var real = parseDur(rec.time);
+      rows.push([
+        li.closest('.week').id,
+        li.dataset.date,
+        li.dataset.label,
+        plan,
+        real == null ? '' : real,
+        (real == null || !plan) ? '' : (real - plan),
+        rec.done ? 'oui' : 'non',
+        (rec.note || '').replace(/"/g,'""')
+      ]);
+    });
+    var csv = rows.map(function(r){
+      return r.map(function(c){ return '"' + String(c) + '"'; }).join(';');
+    }).join('\r\n');
+    download('suivi_templiers_' + stamp() + '.csv', 'text/csv', '\ufeff' + csv);
+  });
+
+  if(byId('tk-import')) byId('tk-import').addEventListener('click', function(){ byId('tk-file').click(); });
+  if(byId('tk-file')) byId('tk-file').addEventListener('change', function(e){
+    var f = e.target.files && e.target.files[0];
+    if(!f) return;
+    var r = new FileReader();
+    r.onload = function(){
+      try{
+        var j = JSON.parse(r.result);
+        store = j.data || j;
+        save(); paintAll();
+      }catch(err){ alert('Fichier JSON illisible.'); }
+    };
+    r.readAsText(f);
+    e.target.value = '';
+  });
+
+  if(byId('tk-reset')) byId('tk-reset').addEventListener('click', function(){
+    if(!confirm('Effacer tout le suivi (coches, temps, commentaires) ?')) return;
+    store = {}; save();
+    days.forEach(function(li){ openDay(li, false); });
+    paintAll();
+  });
+  if(byId('tk-expand')) byId('tk-expand').addEventListener('click', function(){
+    days.forEach(function(li){ openDay(li, true); });
+  });
+  if(byId('tk-collapse')) byId('tk-collapse').addEventListener('click', function(){
+    days.forEach(function(li){ if(!li.classList.contains('has-data')) openDay(li, false); });
+  });
+
+  /* ================= sauvegarde versionnée dans un dossier ================= */
+  /* Trois modes, du plus fiable au plus dégradé :
+     1. serveur local (serveur_plan.py) : écriture directe, aucune autorisation,
+        rien à redonner après un redémarrage du poste ;
+     2. File System Access (Chrome / Edge en file://) : dossier à désigner,
+        et à ré-autoriser à chaque session ;
+     3. téléchargement classique, nom de fichier correct, à déplacer à la main. */
+
+  var FSA = (typeof window.showDirectoryPicker === 'function');
+  var DB = 'templiers-suivi', ST = 'handles';
+  var dirHandle = null;
+  var srv = null;            /* {dir: "C:\\...\\Trail"} si le serveur local répond */
+  var fname = decodeURIComponent((location.pathname.split('/').pop() || '')).replace(/\.html?$/i,'');
+  var BASE = (fname || 'Plan_Templiers_2026_suivi').replace(/_\d+$/,'');
+  var stateEl = document.getElementById('tk-state');
+
+  function idb(){
+    return new Promise(function(res, rej){
+      try{
+        var r = indexedDB.open(DB, 1);
+        r.onupgradeneeded = function(){ r.result.createObjectStore(ST); };
+        r.onsuccess = function(){ res(r.result); };
+        r.onerror = function(){ rej(r.error); };
+      }catch(e){ rej(e); }
+    });
+  }
+  function idbGet(k){
+    return idb().then(function(db){
+      return new Promise(function(res, rej){
+        var q = db.transaction(ST).objectStore(ST).get(k);
+        q.onsuccess = function(){ res(q.result || null); };
+        q.onerror = function(){ rej(q.error); };
+      });
+    }).catch(function(){ return null; });
+  }
+  function idbPut(k, v){
+    return idb().then(function(db){
+      return new Promise(function(res, rej){
+        var tx = db.transaction(ST, 'readwrite');
+        tx.objectStore(ST).put(v, k);
+        tx.oncomplete = res; tx.onerror = function(){ rej(tx.error); };
+      });
+    }).catch(function(){ return null; });
+  }
+
+  function shortDir(p){
+    if(!p) return '';
+    var parts = String(p).replace(/[\\/]+$/,'').split(/[\\/]/);
+    return parts.length > 2 ? '…\\' + parts.slice(-2).join('\\') : p;
+  }
+
+  function paintState(msg, cls){
+    if(!stateEl) return;
+    var bits = [], mode;
+    if(srv){
+      mode = 'serveur local \u2192 <b>' + shortDir(srv.dir) + '</b>';
+    } else if(dirHandle){
+      mode = 'dossier \u2192 <b>' + dirHandle.name + '</b>';
+    } else if(FSA){
+      mode = '<span class="ko">dossier non autoris\u00e9</span>';
+    } else {
+      mode = '<span class="ko">t\u00e9l\u00e9chargement</span>';
+    }
+    bits.push('cible\u2009: ' + mode);
+    bits.push('derni\u00e8re version\u2009: ' + (meta.version ? '<b>_' + meta.version + '</b>' : '\u2014'));
+    var srcTxt = loadedFrom || (Object.keys(store).length ? 'saisie en cours' : 'aucun');
+    bits.push('\u00e9tat charg\u00e9 depuis\u2009: <b>' + srcTxt + '</b>');
+    if(msg) bits.push('<span class="' + (cls || 'ok') + '">' + msg + '</span>');
+    stateEl.innerHTML = bits.join('<span style="color:var(--hair)">\u00b7</span>');
+    if(embedded && loadedFrom === 'navigateur'){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = 'charger l\u2019\u00e9tat du fichier';
+      b.addEventListener('click', function(){
+        if(!confirm('Remplacer le suivi du navigateur par celui enregistr\u00e9 dans ce fichier ?')) return;
+        store = JSON.parse(JSON.stringify(embedded.data || {}));
+        meta.version = embedded.version || meta.version;
+        loadedFrom = 'fichier';
+        save(); paintAll();
+      });
+      stateEl.appendChild(document.createTextNode(' '));
+      stateEl.appendChild(b);
+    }
+  }
+
+  /* HTML autonome : le plan + l'état du suivi injecté en JSON */
+  function snapshot(version){
+    var root = document.documentElement.cloneNode(true);
+    root.querySelectorAll('.day').forEach(function(l){
+      l.classList.remove('is-open','is-done','has-data');
+    });
+    root.querySelectorAll('.week').forEach(function(w){
+      w.classList.remove('is-now','is-complete');
+    });
+    root.querySelectorAll('.wt-bar i, #tk-progress').forEach(function(e){ e.style.width = '0%'; });
+    var st = root.querySelector('#tk-state'); if(st) st.innerHTML = '';
+    var fl = root.querySelector('#tk-save'); if(fl){ fl.className = 'tk-save'; fl.textContent = 'enregistr\u00e9'; }
+    var oldData = root.querySelector('#suivi-data'); if(oldData) oldData.remove();
+    var sc = document.createElement('script');
+    sc.id = 'suivi-data'; sc.type = 'application/json';
+    sc.textContent = JSON.stringify({
+      plan: 'Templiers 2026', version: version,
+      savedAt: new Date().toISOString(), data: store
+    });
+    root.querySelector('head').appendChild(sc);
+    return '<!DOCTYPE html>\n' + root.outerHTML;
+  }
+
+  /* ---------- mode 1 : serveur local ---------- */
+  function pingServer(){
+    if(!/^https?:$/.test(location.protocol)) return Promise.resolve(null);
+    return fetch('/api/ping', {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){ return (j && j.ok) ? j : null; })
+      .catch(function(){ return null; });
+  }
+  function serverNext(){
+    return fetch('/api/next?base=' + encodeURIComponent(BASE), {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){ return (j && j.ok) ? j.version : null; })
+      .catch(function(){ return null; });
+  }
+  function saveViaServer(html, index){
+    return fetch('/api/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type':'text/html; charset=utf-8',
+        'X-Plan-Base': BASE,
+        'X-Plan-Index': String(index || '')
+      },
+      body: html
+    }).then(function(r){
+      return r.json().then(function(j){
+        if(!r.ok || !j.ok) throw new Error(j && j.error || ('HTTP ' + r.status));
+        return j;
+      });
+    });
+  }
+
+  /* ---------- mode 2 : File System Access ---------- */
+  function versionOf(name){
+    var low = name.toLowerCase(), pre = BASE.toLowerCase() + '_';
+    if(low.slice(0, pre.length) !== pre) return 0;
+    var rest = name.slice(pre.length);
+    var dot = rest.lastIndexOf('.');
+    if(dot <= 0) return 0;
+    var ext = rest.slice(dot).toLowerCase();
+    if(ext !== '.html' && ext !== '.htm') return 0;
+    var num = rest.slice(0, dot);
+    for(var i = 0; i < num.length; i++){
+      if(num.charCodeAt(i) < 48 || num.charCodeAt(i) > 57) return 0;
+    }
+    return num.length ? parseInt(num, 10) : 0;
+  }
+  function nextVersion(){
+    if(!dirHandle) return Promise.resolve((meta.version || 0) + 1);
+    var max = 0;
+    var it = dirHandle.values();
+    function step(){
+      return it.next().then(function(r){
+        if(r.done) return max + 1;
+        if(r.value.kind === 'file'){
+          var n = versionOf(r.value.name);
+          if(n > max) max = n;
+        }
+        return step();
+      });
+    }
+    return step().catch(function(){ return (meta.version || 0) + 1; });
+  }
+  function ensureDir(force){
+    if(!FSA) return Promise.resolve(null);
+    if(dirHandle && !force){
+      return dirHandle.queryPermission({mode:'readwrite'}).then(function(p){
+        if(p === 'granted') return dirHandle;
+        return dirHandle.requestPermission({mode:'readwrite'}).then(function(p2){
+          return p2 === 'granted' ? dirHandle : null;
+        });
+      }).catch(function(){ return null; });
+    }
+    return window.showDirectoryPicker({id:'templiers', mode:'readwrite', startIn:'documents'})
+      .then(function(h){
+        dirHandle = h;
+        return idbPut('dir', h).then(function(){ return h; });
+      });
+  }
+
+  /* ---------- orchestration ---------- */
+  function hhmm(){
+    var t = new Date();
+    return ('0'+t.getHours()).slice(-2) + 'h' + ('0'+t.getMinutes()).slice(-2);
+  }
+
+  function saveVersion(){
+    var btn = document.getElementById('tk-save-file');
+    if(btn) btn.disabled = true;
+
+    var flow;
+    if(srv){
+      /* le serveur annonce le prochain numéro, la page l'embarque dans
+         l'instantané, puis le serveur écrit sous ce nom */
+      flow = serverNext().then(function(n){
+        return saveViaServer(snapshot(n || 0), n).then(function(j){
+          meta.version = j.version; save();
+          paintState('\u2713 ' + j.name + ' \u00e9crit \u00e0 ' + hhmm(), 'ok');
+        });
+      });
+    } else {
+      flow = ensureDir(false).then(function(h){
+        return nextVersion().then(function(n){
+          var html = snapshot(n);
+          var name = BASE + '_' + n + '.html';
+          if(!h){
+            download(name, 'text/html', html);
+            meta.version = n; save();
+            paintState('t\u00e9l\u00e9charg\u00e9 sous ' + name + ' (dossier de t\u00e9l\u00e9chargement)', 'ko');
+            return;
+          }
+          return h.getFileHandle(name, {create:true}).then(function(fh){
+            return fh.createWritable().then(function(w){
+              return w.write(new Blob([html], {type:'text/html'})).then(function(){ return w.close(); });
+            });
+          }).then(function(){
+            meta.version = n; save();
+            paintState('\u2713 ' + name + ' \u00e9crit \u00e0 ' + hhmm(), 'ok');
+          });
+        });
+      });
+    }
+
+    return flow.catch(function(e){
+      if(e && e.name === 'AbortError'){ paintState('choix du dossier annul\u00e9', 'ko'); return; }
+      paintState('\u00e9chec\u2009: ' + (e && (e.message || e.name) || 'erreur'), 'ko');
+    }).then(function(){
+      if(btn) btn.disabled = false;
+    });
+  }
+
+  var bSave = document.getElementById('tk-save-file');
+  if(bSave) bSave.addEventListener('click', saveVersion);
+  var bFolder = document.getElementById('tk-folder');
+  if(bFolder) bFolder.addEventListener('click', function(){
+    if(srv){
+      paintState('le serveur local \u00e9crit d\u00e9j\u00e0 dans ' + shortDir(srv.dir), 'ok');
+      return;
+    }
+    if(!FSA){
+      paintState('ce navigateur ne permet pas d\u2019\u00e9crire dans un dossier \u2014 utilise Chrome ou Edge', 'ko');
+      return;
+    }
+    ensureDir(true).then(function(){ paintState('dossier autoris\u00e9', 'ok'); })
+      .catch(function(){ paintState('choix du dossier annul\u00e9', 'ko'); });
+  });
+  document.addEventListener('keydown', function(e){
+    if((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')){
+      e.preventDefault(); saveVersion();
+    }
+  });
+
+  load();
+  paintAll();
+  paintState();
+
+  pingServer().then(function(j){
+    if(j){ srv = j; paintState(); return null; }
+    if(!FSA) return null;
+    return idbGet('dir').then(function(h){
+      if(!h) return null;
+      return h.queryPermission({mode:'readwrite'}).then(function(p){
+        dirHandle = h;
+        if(p === 'granted') paintState();
+        else paintState('dossier \u00e0 r\u00e9autoriser (1 clic sur Sauvegarder)', 'ko');
+      });
+    });
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>

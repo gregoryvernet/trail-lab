@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Trail Lab — Référentiel des indicateurs</title>
+<style>
+  :root{
+    --paper:#EFEDE4; --card:#FAF9F4; --ink:#1F2C27; --soft:#5C665F;
+    --bistre:#9A6636; --forest:#3E6146; --water:#2E6B8C; --flag:#B23A2B;
+    --stone:#D7D2C3; --hair:#C9C3B2;
+    --display:Bahnschrift,"DIN Alternate","Avenir Next Condensed","Roboto Condensed","Arial Narrow",sans-serif;
+    --body:"Palatino Linotype",Palatino,"Book Antiqua",Charter,Georgia,serif;
+    --mono:Consolas,"SF Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+       font-family:var(--body);font-size:15px;line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:42px 34px 70px}
+  header{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:6px}
+  h1{font-family:var(--display);text-transform:uppercase;letter-spacing:.04em;
+     font-size:40px;margin:0;line-height:1}
+  .sub{font-family:var(--mono);font-size:12px;color:var(--soft);margin-top:8px;
+       letter-spacing:.02em}
+  h2{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;
+     font-size:15px;color:var(--bistre);margin:38px 0 4px;
+     border-bottom:1px solid var(--hair);padding-bottom:6px}
+  h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.10em;
+     font-size:13px;margin:22px 0 6px;color:var(--ink)}
+  p{margin:8px 0}
+  .lead{color:var(--soft);font-size:14.5px;margin-bottom:20px}
+  table{width:100%;border-collapse:collapse;margin:12px 0 18px;font-size:13.5px}
+  th{font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;
+     font-size:11px;color:var(--bistre);text-align:left;
+     border-bottom:1px solid var(--ink);padding:7px 9px}
+  td{border-bottom:1px solid var(--hair);padding:7px 9px;vertical-align:top}
+  tr:nth-child(even) td{background:var(--card)}
+  code,.mono{font-family:var(--mono);font-size:12.5px;background:var(--card);
+       padding:1px 5px;border:1px solid var(--hair)}
+  .formula{font-family:var(--mono);font-size:13px;background:var(--card);
+       border-left:3px solid var(--bistre);padding:10px 14px;margin:10px 0;
+       display:block;white-space:pre-wrap}
+  .box{background:var(--card);border-left:3px solid var(--bistre);
+       padding:12px 16px;margin:14px 0}
+  .warn{border-left-color:var(--flag)}
+  .ok{border-left-color:var(--forest)}
+  .tag{font-family:var(--display);font-size:10px;letter-spacing:.12em;
+       text-transform:uppercase;padding:2px 7px;border:1px solid var(--hair);
+       background:var(--card);color:var(--soft);white-space:nowrap}
+  .t-solide{border-color:var(--forest);color:var(--forest)}
+  .t-moyen{border-color:var(--bistre);color:var(--bistre)}
+  .t-fragile{border-color:var(--flag);color:var(--flag)}
+  ul{margin:8px 0 8px 18px;padding:0}
+  li{margin:4px 0}
+  footer{margin-top:44px;border-top:1px solid var(--hair);padding-top:14px;
+         font-family:var(--mono);font-size:11.5px;color:var(--soft)}
+  @media print{ body{background:#fff} .wrap{padding:0 8mm} h2{page-break-after:avoid}
+                table{page-break-inside:avoid} .box{page-break-inside:avoid} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Trail Lab — Référentiel des indicateurs</h1>
+  <div class="sub">Version moteur 2026-08-25-B · Templiers 2026 · 80 km / 3 400 D+ · 18 octobre</div>
+</header>
+
+<p class="lead">Ce document liste tout ce que l'application calcule, comment
+chaque indicateur est construit, et ce qu'il vaut. La dernière colonne
+n'est pas décorative : plusieurs indicateurs reposent sur des échantillons
+étroits et doivent être lus avec cette réserve.</p>
+
+<h2>1 · Fondations physiologiques</h2>
+
+<h3>Coût énergétique de la locomotion</h3>
+<p>Tout le moteur repose sur les polynômes de Minetti et al. (2002), qui donnent
+l'énergie dépensée par kilo et par mètre parcouru, en fonction de la pente.
+Domaine de validité : −45 % à +45 %.</p>
+<span class="formula">Cr(i) = 155,4·i⁵ − 30,4·i⁴ − 43,3·i³ + 46,3·i² + 19,5·i + 3,6   [J/kg/m]
+Cw(i) = 280,5·i⁵ − 58,7·i⁴ − 76,8·i³ + 51,9·i² + 19,6·i + 2,5   [marche]</span>
+<p>Repères : 3,60 J/kg/m sur le plat, 5,97 à +10 %, 2,15 à −10 %, 9,01 à +20 %.
+<strong>La descente modérée coûte moins cher que le plat</strong> — c'est le point que
+la version initiale du code inversait.</p>
+
+<div class="box warn">
+  <strong>Limite connue.</strong> Minetti mesure le coût <em>métabolique</em>, sur tapis
+  roulant. Il ne capte ni le travail excentrique des quadriceps en descente
+  raide, ni le sol technique, ni la boue. Sur 3 400 m de D−, c'est
+  précisément l'excentrique qui devient limitant.
+</div>
+
+<h3>Pente</h3>
+<p>Calculée sur une fenêtre glissante de <strong>30 mètres de distance parcourue</strong>,
+après lissage de l'altitude par médiane puis moyenne. Les fenêtres de
+lissage sont exprimées en distance, pas en nombre de points, pour rester
+valides sur des traces d'espacement variable.</p>
+<div class="box warn">
+  <strong>Pourquoi ce n'est pas un détail.</strong> Sur un pas GPS de 2 à 3 m avec une
+  altitude résolue au mètre, la pente instantanée oscille entre ±40 %
+  <em>sur du plat</em>. Tout indicateur bâti sur une pente point-à-point mesure
+  du bruit.
+</div>
+
+<h3>Marche ou course</h3>
+<p>Classification point par point : cadence sous 145 spm <em>et</em> vitesse
+compatible avec un plafond de marche décroissant avec la pente. Sans
+cadence, repli sur la vitesse seule — nettement moins fiable.</p>
+
+<h2>2 · Indicateurs de sortie</h2>
+
+<table>
+<tr><th>Indicateur</th><th>Construction</th><th>Lecture</th><th>Fiabilité</th></tr>
+
+<tr><td><strong>Distance, D+, D−</strong></td>
+<td>Haversine entre points ; dénivelé sur altitude lissée uniquement</td>
+<td>Comparable à Polar Flow à 2-3 % près</td>
+<td><span class="tag t-solide">solide</span></td></tr>
+
+<tr><td><strong>Kilomètre-effort</strong></td>
+<td><span class="mono">distance + D+/100</span></td>
+<td>Unité de référence de l'app. Retenue contre six alternatives par
+validation croisée</td>
+<td><span class="tag t-solide">solide</span></td></tr>
+
+<tr><td><strong>GAP</strong><br>vitesse équivalente plat</td>
+<td><span class="mono">v × Cr(pente) / 3,6</span></td>
+<td>Neutralise la pente. 10 km/h à −10 % valent 5,98 km/h de plat</td>
+<td><span class="tag t-solide">solide</span></td></tr>
+
+<tr><td><strong>Puissance métabolique</strong></td>
+<td><span class="mono">v × Cr(pente)</span>, en W/kg, coût marche si marché</td>
+<td>12 W/kg ≈ 12 km/h sur le plat</td>
+<td><span class="tag t-solide">solide</span></td></tr>
+
+<tr><td><strong>Coût cardiaque</strong></td>
+<td><span class="mono">FC / puissance métabolique</span> — bpm par W/kg</td>
+<td>Battements nécessaires pour produire un watt par kilo.
+<strong>Plus bas = plus économique.</strong> Neutralise la pente</td>
+<td><span class="tag t-moyen">moyen</span></td></tr>
+
+<tr><td><strong>VAM</strong></td>
+<td>D+ divisé par le temps passé en montée seule</td>
+<td>Mètres de dénivelé par heure d'ascension</td>
+<td><span class="tag t-solide">solide</span></td></tr>
+
+<tr><td><strong>Découplage cardiaque</strong></td>
+<td>Coût cardiaque 2ᵉ moitié / 1ʳᵉ moitié, <strong>par bande de pente</strong>,
+agrégé au prorata du temps</td>
+<td>+5 % : la fatigue ne se voit pas. +12 % et au-delà : elle pèse sur un
+format long. Ta valeur actuelle : <strong>+18,6 %</strong></td>
+<td><span class="tag t-moyen">moyen</span></td></tr>
+
+<tr><td><strong>Part de marche</strong></td>
+<td>Temps classé marche / temps total</td>
+<td>Dépend entièrement de la présence de cadence</td>
+<td><span class="tag t-moyen">moyen</span></td></tr>
+
+<tr><td><strong>TRIMP</strong></td>
+<td><span class="mono">Σ min × HRR × 0,64 × e^(1,92·HRR)</span> (Banister)</td>
+<td>87 points = une heure d'endurance fondamentale. Seul agrégat commun
+trail et vélo</td>
+<td><span class="tag t-solide">solide</span></td></tr>
+
+<tr><td><strong>Type de séance</strong></td>
+<td>Bimodalité de la FC par blocs de 60 s, corrigée</td>
+<td><strong>Suggestion, confirmée manuellement au dépôt.</strong> Rate les côtes
+courtes (inertie cardiaque de 25 s)</td>
+<td><span class="tag t-fragile">fragile</span></td></tr>
+</table>
+
+<div class="box">
+  <strong>Sur le découplage.</strong> Le calcul par bande de pente n'est pas un
+  raffinement : comparer les deux moitiés d'une sortie qui monte puis
+  descend mesure le changement de terrain, pas la fatigue. Quand aucune
+  bande n'est présente dans les deux moitiés, l'indicateur renvoie
+  « non mesurable » plutôt qu'un chiffre trompeur.
+</div>
+
+<h2>3 · Bandes de pente</h2>
+
+<table>
+<tr><th>Bande</th><th>Bornes</th><th>Ce qui change</th></tr>
+<tr><td>Montée raide</td><td>au-delà de +17 %</td><td>Marche quasi systématique</td></tr>
+<tr><td>Montée difficile</td><td>+12 à +17 %</td><td>Marche compétitive avec la course</td></tr>
+<tr><td>Montée dure</td><td>+7 à +12 %</td><td>Foulée raccourcie</td></tr>
+<tr><td>Montée moyenne</td><td>+3 à +7 %</td><td>Course maintenue</td></tr>
+<tr><td>Plat</td><td>−3 à +3 %</td><td>Référence</td></tr>
+<tr><td>Descente moyenne</td><td>−3 à −7 %</td><td>Zone la plus économique</td></tr>
+<tr><td>Descente dure</td><td>−7 à −12 %</td><td>Freinage excentrique</td></tr>
+<tr><td>Descente difficile</td><td>−12 à −17 %</td><td>Technique dominante</td></tr>
+<tr><td>Descente raide</td><td>au-delà de −17 %</td><td>Coût musculaire maximal</td></tr>
+</table>
+
+<p>Une bande n'est retenue dans une comparaison qu'au-delà de
+<strong>400 m parcourus dans la sortie</strong>, <strong>2 km au total côté récent</strong> et
+<strong>6 km en référence</strong>. Les moyennes sont pondérées par la distance.</p>
+
+<div class="box warn">
+  <strong>Pourquoi la distance et non le temps.</strong> Deux minutes dans une bande,
+  c'est 600 m sur du roulant mais 200 m en montée raide. Un seuil temporel
+  accepte donc des échantillons trois fois moins riches là où l'allure est
+  basse — exactement les bandes qui produisaient des écarts aberrants.
+</div>
+
+<h2>4 · Coût de relance</h2>
+
+<p>Après chaque montée ou descente d'au moins 200 m, on mesure l'allure et la
+FC sur le plat qui suit, dans trois fenêtres de distance. L'origine est le
+<strong>début du plat</strong>, pas la fin de la montée — après un col vient une
+descente, jamais du plat.</p>
+
+<table>
+<tr><th>Fenêtre</th><th>Question</th></tr>
+<tr><td>0 – 200 m</td><td>La relance : es-tu capable de repartir</td></tr>
+<tr><td>200 – 600 m</td><td>L'effort : tiens-tu l'allure retrouvée</td></tr>
+<tr><td>600 – 1 500 m</td><td>La récupération : combien de temps la bosse te coûte</td></tr>
+</table>
+
+<p>Référence : ton allure de plat sur l'ensemble de la sortie, hors cinq
+premières minutes. <strong>Deux mesures sont affichées, jamais fondues en un
+score.</strong></p>
+
+<table>
+<tr><th>Vitesse</th><th>FC</th><th>Verdict</th></tr>
+<tr><td>en hausse</td><td>stable</td><td>Vrai gain d'efficacité</td></tr>
+<tr><td>en hausse</td><td>en hausse</td><td>Tu pousses plus fort — dette différée sur format long</td></tr>
+<tr><td>stable</td><td>en baisse</td><td>Gain d'économie pur</td></tr>
+<tr><td>en baisse</td><td>en hausse</td><td>Tu subis des deux côtés — gisement de temps</td></tr>
+</table>
+
+<div class="box warn">
+  <strong>Deux réserves.</strong> Le signal « je pousse plus fort » est porté par la FC
+  absolue, pas par le coût cardiaque : relancer 12 % plus vite avec 6
+  battements de plus fait <em>baisser</em> le coût, puisque la puissance croît
+  plus vite que la fréquence. Et l'amplitude est sous-estimée par dilution
+  — un coût réel de −12 % ressort à −5 % quand les fenêtres représentent
+  40 % du plat. Le sens et le classement restent justes.
+</div>
+
+<div class="box">
+  <strong>Ce qu'on ne sait pas mesurer.</strong> Le gain de temps réel d'une relance
+  dynamique, comparé à une relance passive, supposerait d'observer la même
+  bosse courue des deux façons. C'est hors de portée des données, et un
+  score composite le masquerait sous un chiffre unique. C'est pourquoi
+  l'application affiche l'arbitrage plutôt qu'un verdict.
+</div>
+
+<h2>5 · Comparaison et détection de progression</h2>
+
+<h3>Multi-horizons : 3, 5, 10 et 20 dernières sorties</h3>
+<p>Le même écart est calculé sur quatre profondeurs d'historique, affiché en
+matrice bande × horizon.</p>
+<div class="box ok">
+  <strong>L'intérêt n'est pas d'avoir quatre chiffres au lieu d'un.</strong> La
+  cohérence entre horizons est elle-même une mesure de confiance, plus
+  honnête que n'importe quel test statistique sur un échantillon étroit.
+  <ul>
+  <li>Visible sur les quatre → progression installée</li>
+  <li>Visible sur 3 mais pas sur 20 → forme du moment, ou bruit</li>
+  <li>Visible sur 20 mais pas sur 3 → progrès ancien en train de s'éroder</li>
+  </ul>
+  Ces trois situations appellent des décisions d'entraînement différentes.
+  Un chiffre unique les confondait.
+</div>
+
+
+<p>Les <em>n</em> dernières sorties trail (réglable de 3 à 30) sont comparées au
+reste de la période choisie. Deux mesures indépendantes :</p>
+
+<ul>
+<li><strong>Ampleur</strong> — écart rapporté au seuil à 95 %, corrigé de Šidák pour le
+nombre de bandes testées</li>
+<li><strong>Constance</strong> — test des signes : combien de sorties récentes au-dessus
+de la médiane de référence. Inutilisable sous 5 sorties</li>
+</ul>
+
+<table>
+<tr><th>Niveau</th><th>Seuil</th><th>Faux positifs mesurés</th></tr>
+<tr><td>Net</td><td>force ≥ 1,30</td><td>1 à 6 %</td></tr>
+<tr><td>Probable</td><td>force ≥ 0,90</td><td>16 à 25 %</td></tr>
+<tr><td>Faible</td><td>force ≥ 0,60</td><td>—</td></tr>
+<tr><td>Nul</td><td>en dessous</td><td>—</td></tr>
+</table>
+
+<p>Seuils calibrés par simulation sur 400 tirages de données sans aucune
+progression. À 1,30, un gain réel de 10 % est détecté dans 77 % des cas à
+quatre sorties, 99 % à dix.</p>
+
+<h3>Descente en deux dimensions</h3>
+<p>Croisement de l'écart de vitesse et de l'écart de coût cardiaque, en
+quatre cadrans. Un score unique de descente serait trompeur : descendre
+vite en payant cher n'est pas descendre vite en étant relâché, et les deux
+appellent un travail différent.</p>
+<table>
+<tr><th>Cadran</th><th>Lecture</th><th>Ce qu'il faut travailler</th></tr>
+<tr><td>Rapide et économique</td><td>Vrai gain</td><td>Rien — capitaliser</td></tr>
+<tr><td>Rapide mais coûteuse</td><td>Tu forces</td><td>Technique, relâchement, excentrique</td></tr>
+<tr><td>Lente mais économique</td><td>Marge disponible</td><td>Engagement, appuis, confiance</td></tr>
+<tr><td>Lente et coûteuse</td><td>Régression</td><td>Fatigue ou terrain — vérifier avant de conclure</td></tr>
+</table>
+
+<h2>6 · Charge d'entraînement</h2>
+
+<table>
+<tr><th>Indicateur</th><th>Construction</th><th>Lecture</th></tr>
+<tr><td><strong>Charge hebdomadaire</strong></td><td>Somme des TRIMP, tous sports</td>
+<td>Divisée par 87 : heures d'endurance fondamentale équivalentes</td></tr>
+<tr><td><strong>Ratio aigu / chronique</strong></td>
+<td>Semaine courante / moyenne des <strong>4 précédentes, celle-ci exclue</strong></td>
+<td>×0,8 à ×1,3 : progression absorbable. Au-delà de ×1,5 : montée brutale</td></tr>
+</table>
+
+<div class="box warn">
+  La semaine en cours est incomplète tant qu'elle n'est pas finie. Le ratio
+  monte donc mécaniquement en fin de semaine et ne doit se lire que le
+  dimanche soir.
+</div>
+
+<h2>7 · Vitesse de base — meilleurs efforts soutenus</h2>
+
+<p>De chaque sortie on extrait le meilleur bloc soutenu de 30, 60 et 120
+minutes, en GAP. Le quantile 95 % de ces blocs forme ta courbe
+vitesse-durée.</p>
+
+<div class="box ok">
+  <strong>Pourquoi c'est un gain net.</strong> Le modèle d'endurance exige des sorties
+  entières jugées continues : 25 sur 242. L'approche par blocs fait
+  contribuer <em>chaque</em> sortie — une séance de fractionné via son meilleur
+  bloc de 30 minutes, une sortie longue mal gérée via son meilleur bloc de
+  2 heures. On lit l'enveloppe de performance directement, au lieu
+  d'essayer de la filtrer par des heuristiques d'intensité.
+</div>
+
+<p>La décroissance est ajustée en log-log :
+<span class="mono">log v = α + β · log(durée)</span>. β vaut typiquement
+−0,10 à −0,14, soit 7 à 9 % de perte par doublement de durée. La cible est
+évaluée sur cette droite, ce qui rend l'extrapolation cohérente.</p>
+
+<div class="box warn">
+  <strong>Une erreur corrigée en cours de route.</strong> La première version pondérait
+  les trois blocs par leur proximité avec la cible. À neuf heures, les
+  trois étant tous très éloignés, les poids devenaient presque égaux et la
+  vitesse prédite ressortait <em>plus élevée</em> qu'à trois heures.
+</div>
+
+<h3>Vérification croisée du modèle</h3>
+<p>β et l'exposant d'endurance <em>b</em> mesurent le même phénomène par deux
+chemins indépendants. Si <span class="mono">v ∝ T^β</span>, alors
+<span class="mono">D = v·T ∝ T^(1+β)</span>, donc :</p>
+<span class="formula">b = 1 / (1 + β)</span>
+<p>β = −0,106 donne b = 1,119. L'exposant mesuré sur sorties entières vaut
+1,133. <strong>Écart de 0,014</strong> — les deux méthodes concordent, l'une partant
+des blocs intra-sortie, l'autre de sorties entières. C'est la seule
+validation interne dont dispose le modèle, et elle est passée.</p>
+
+<h2>8 · Marcher ou courir</h2>
+
+<p>Comparaison, dans chaque bande de montée, de la vitesse et du coût
+cardiaque des portions marchées contre les portions courues. La bascule est
+la première bande où marcher est au moins aussi rapide pour un coût égal ou
+inférieur.</p>
+
+<div class="box">
+  <strong>Mutualisé sur l'historique, et c'est ce qui le rend calculable.</strong> Par
+  sortie, tu as rarement marché <em>et</em> couru dans la même bande assez
+  longtemps : le calcul renvoyait « non mesurable » presque toujours.
+  Cumulé sur des centaines de sorties, chaque bande finit par contenir les
+  deux régimes. Seuil retenu : 20 minutes de chaque mode par bande.
+</div>
+
+<h2>9 · Prédiction de temps</h2>
+
+<span class="formula">T = a · KE^b        KE = kilomètre-effort</span>
+
+<p>Deux paramètres, calibrés sur tes sorties trail uniquement, dans une
+fenêtre de distance fixée par la cible visée — pour les Templiers, les
+sorties au-delà de 19 km-effort.</p>
+
+<table>
+<tr><th>Paramètre</th><th>Valeur</th><th>Commentaire</th></tr>
+<tr><td>Exposant b</td><td><strong>1,133</strong></td><td>Plage plausible en trail long : 1,10 à 1,18</td></tr>
+<tr><td>R²</td><td>0,939</td><td>Sur 25 sorties</td></tr>
+<tr><td>Erreur de prédiction</td><td><strong>13,3 %</strong></td><td>Validation croisée un-contre-tous</td></tr>
+<tr><td>Templiers, 114 km-effort</td><td><strong>9h01</strong></td><td>Intervalle 7h54 – 10h18</td></tr>
+</table>
+
+<div class="box warn">
+  <strong>L'intervalle est la vraie information.</strong> Deux heures et demie
+  d'amplitude, ce n'est pas de la prudence excessive : c'est ce que valent
+  25 points de calibrage, dont un seul au-delà de 80 km-effort. Le chiffre
+  central est une cible, pas une prévision. L'erreur affichée est celle de
+  la validation croisée, pas le résidu d'ajustement — un modèle prédit
+  toujours bien les points qu'il a vus.
+</div>
+
+<h3>Ce qui a été écarté, et pourquoi</h3>
+<table>
+<tr><th>Approche</th><th>Résultat</th><th>Décision</th></tr>
+<tr><td>Machine learning multi-variables</td><td>Surapprentissage garanti sur 25 points</td><td>Écartée d'emblée</td></tr>
+<tr><td>Route et trail sous une pente commune</td><td>b = 0,815 route contre 0,994 trail</td><td>Écartée : deux régimes distincts</td></tr>
+<tr><td>Ajustement sur toute la plage</td><td>b passe de 0,994 à 1,213 selon le seuil bas</td><td>Écartée : loi unique inadaptée</td></tr>
+<tr><td>Distance équivalente Minetti</td><td>14,0 % d'erreur</td><td>Écartée au profit du km-effort</td></tr>
+<tr><td>Minetti + terme excentrique</td><td>12,2 % — gain non significatif (t = 1,23)</td><td>Écartée par parcimonie</td></tr>
+<tr><td><strong>Km-effort</strong></td><td>13,0 %</td><td><strong>Retenue</strong></td></tr>
+</table>
+
+<h3>Plan par segment</h3>
+<p>Trois architectures possibles, une seule tient.</p>
+<table>
+<tr><th>Approche</th><th>Problème</th></tr>
+<tr><td>Modèle global seul</td><td>Total crédible, aucune répartition — incapable
+de dire à quelle heure tu passes au col</td></tr>
+<tr><td>Profil par bande seul</td><td>Répartition fine, total faux — les bandes
+sont mesurées à intensité d'entraînement, sur des sorties de deux heures</td></tr>
+<tr><td><strong>Hybride</strong></td><td><strong>Les bandes donnent la forme, le modèle
+d'endurance donne le total</strong></td></tr>
+</table>
+
+<div class="box warn">
+  <strong>La fatigue n'est pas comptée deux fois.</strong> L'exposant b <em>est</em> un terme
+  de fatigue : b = 1,133 signifie 9,5 % de ralentissement par doublement de
+  la distance équivalente. Ajouter par-dessus un facteur calibré sur la
+  dérive cardiaque compterait deux fois le même phénomène.
+  <br><br>
+  La dérive ne rallonge donc pas la course. Elle <strong>répartit</strong> le
+  ralentissement du départ vers l'arrivée : à total constant, un coureur qui
+  dérive peu part et finit à allure proche ; un coureur qui dérive
+  beaucoup part vite et finit lentement. Amplitude bornée à 30 %, parce
+  qu'extrapoler une dérive mesurée sur deux heures vers neuf heures reste
+  un pari.
+</div>
+
+<h2>10 · Suivi du plan</h2>
+
+<p>56 séances sur 8 semaines, du 24 août au 18 octobre. Appariement séance
+prévue / activité importée sur la date et le sport, avec une journée de
+tolérance. L'écart se mesure à la <strong>borne la plus proche</strong> de la fourchette,
+pas au milieu : le plan écrit « 4h30 – 5h », donc 4h35 est conforme.</p>
+
+<p>Le journal manuel — case « fait », RPE, réaction du genou à J+1 et J+2 —
+prime toujours sur l'appariement automatique. Il est indispensable : le
+rapprochement ne voit que les séances portant un fichier, donc jamais le
+renforcement.</p>
+
+<div class="box warn">
+  <strong>Incohérence dans le plan source.</strong> Les en-têtes de semaine annoncent un
+  volume de course inférieur d'environ deux heures à la somme des séances
+  quotidiennes, sur les semaines 1 à 6. Écart nul sur 7 et 8. L'application
+  suit les séances quotidiennes ; la question reste à trancher.
+</div>
+
+<h2>11 · Confrontation à l'analyse externe du 24 août</h2>
+
+<p>Point par point, ce que recommandait le document d'analyse et où en est
+l'application.</p>
+
+<table>
+<tr><th>Recommandation</th><th>État</th><th>Détail</th></tr>
+<tr><td>Comparer à l'intérieur des mêmes régimes de pente</td>
+<td><span class="tag t-solide">fait</span></td>
+<td>Toutes les comparaisons passent par les bandes ; aucune moyenne globale</td></tr>
+<tr><td>Matrice terrain × pente × KPI, bandes 3-7 / 7-12 / 12-17 / &gt;17 %</td>
+<td><span class="tag t-solide">fait</span></td>
+<td>Découpage adopté, symétrique en descente</td></tr>
+<tr><td>Suivre vitesse, VAM, FC, coût cardiaque, cadence par bande</td>
+<td><span class="tag t-solide">fait</span></td>
+<td>Onglet Historique, tableau de détail</td></tr>
+<tr><td>Évolution sur 3, 5, 10 et 20 dernières sorties</td>
+<td><span class="tag t-solide">ajouté</span></td>
+<td>Matrice multi-horizons, section 5</td></tr>
+<tr><td>Tendance, constance et niveau de confiance</td>
+<td><span class="tag t-solide">fait</span></td>
+<td>Force corrigée de Šidák, test des signes, cohérence entre horizons</td></tr>
+<tr><td>Projection sur 3 sorties comme tendance, pas certitude</td>
+<td><span class="tag t-solide">fait</span></td>
+<td>La colonne « 3 dern. » est lue conjointement aux trois autres</td></tr>
+<tr><td>Ne pas réduire à un score global</td>
+<td><span class="tag t-solide">fait</span></td>
+<td>Aucun score composite. Le score initial a été supprimé : il additionnait
+des m/h et des ratios</td></tr>
+<tr><td>Descente à deux dimensions, quatre situations</td>
+<td><span class="tag t-solide">ajouté</span></td>
+<td>Cadrans vitesse × économie, section 5</td></tr>
+<tr><td>Hiérarchie mesures → KPI → comparaison → interprétation → prédiction</td>
+<td><span class="tag t-solide">fait</span></td>
+<td>Correspond aux onglets Sortie, Historique, Tendance, Course</td></tr>
+<tr><td>Découpage d'une trace future en segments</td>
+<td><span class="tag t-solide">fait</span></td>
+<td>Temps par segment sur le profil par bande, total calé sur le modèle
+d'endurance, répartition modulée par la dérive</td></tr>
+<tr><td>Profil personnel apprenant : VAM, GAP, coût, cadence, seuil
+marche/course par pente</td>
+<td><span class="tag t-solide">fait</span></td>
+<td>Seuil marche/course mutualisé sur l'historique, section 8</td></tr>
+<tr><td>Vitesse de base sur meilleurs efforts 30/60/120 min</td>
+<td><span class="tag t-solide">ajouté</span></td>
+<td>Section 7, avec vérification croisée de l'exposant</td></tr>
+<tr><td>Technicité approximée</td>
+<td><span class="tag t-fragile">non fait</span></td>
+<td>Aucune donnée ne permet de la mesurer. L'écart trail/route en donne un
+proxy indirect</td></tr>
+<tr><td>Ajuster aux longueurs, D+, distribution des pentes, récence</td>
+<td><span class="tag t-moyen">partiel</span></td>
+<td>Récence et longueur oui. La distribution des pentes n'est pas encore un
+critère d'appariement entre sorties</td></tr>
+</table>
+
+<div class="box">
+  <strong>Le seul désaccord de fond.</strong> Le document propose « GAP/VAP » comme
+  acquis. La formule de VAP de la version initiale était fausse en descente
+  — elle inversait le signe. Le GAP actuel repose sur l'intégration de
+  Minetti, ce qui n'est pas la même chose et n'a pas les mêmes limites.
+</div>
+
+<h2>12 · Ce qui reste fragile</h2>
+
+<ul>
+<li><strong>25 sorties de calibrage</strong>, une seule au-delà de 80 km-effort. Les sept
+sorties longues du plan densifieront cette zone — recalibrer après la
+semaine 5.</li>
+<li><strong>Détection du type de séance</strong> : rate les côtes courtes. Confirmation
+manuelle indispensable au dépôt.</li>
+<li><strong>Coût de relance</strong> : amplitude sous-estimée par dilution de la référence.</li>
+<li><strong>Minetti sur tapis roulant</strong> : le sol technique, la boue et les cailloux
+ne sont pas modélisés.</li>
+<li><strong>Découplage à +18,6 %</strong> : valeur élevée, à suivre semaine par semaine
+plutôt qu'à interpréter isolément.</li>
+<li><strong>Altitude reconstituée</strong> par modèle de terrain à 25 m sur les sorties
+Polar sans altimètre — soit l'essentiel de l'historique.</li>
+<li><strong>Technicité du terrain</strong> : non mesurée, non mesurable avec les données
+disponibles. C'est la principale variable manquante du modèle.</li>
+<li><strong>Modulation par la dérive</strong> : calibrée sur des sorties de deux heures,
+appliquée à une course de neuf. Bornée à 30 %, mais c'est un pari assumé.</li>
+<li><strong>Extrapolation de la courbe vitesse-durée</strong> : le bloc mesuré le plus
+long fait 120 minutes, la cible en fait 540. Facteur 4,5.</li>
+</ul>
+
+<footer>
+Trail Lab · moteur 2026-08-25-B · intègre l'analyse du 24 août · référence : Minetti et al. (2002),
+<em>Energy cost of walking and running at extreme uphill and downhill slopes</em>,
+J Appl Physiol 93:1039-1046 · charge : Banister (TRIMP), ratio aigu/chronique
+</footer>
+
+</div>
+</body>
+</html>

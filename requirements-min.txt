@@ -1,0 +1,7 @@
+# Socle local, sans Supabase ni Strava : 6 paquets au lieu de 8.
+streamlit
+pandas
+numpy
+plotly
+gpxpy
+fitparse

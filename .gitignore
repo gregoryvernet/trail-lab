@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.streamlit/secrets.toml
+data/
+*.gpx
+*.tcx
+*.fit
+*.csv
+.DS_Store

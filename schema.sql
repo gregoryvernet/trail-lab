@@ -1,0 +1,121 @@
+
+-- À exécuter une fois dans l'éditeur SQL de Supabase.
+
+create table if not exists activities (
+  activity_id   text primary key,
+  source        text,
+  sport         text,
+  date          timestamptz,
+  name          text,
+  distance_km   double precision,
+  d_plus        double precision,
+  d_minus       double precision,
+  duration_h    double precision,
+  deq_km        double precision,
+  ke_km         double precision,
+  v30           double precision,
+  v60           double precision,
+  v120          double precision,
+  poids_kg      double precision,
+  w_moyen       double precision,
+  w_max_5s      double precision,
+  w15           double precision,
+  w30           double precision,
+  w60           double precision,
+  wkg_moyen     double precision,
+  wkg_max_5s    double precision,
+  wkg15         double precision,
+  wkg30         double precision,
+  wkg60         double precision,
+  apres_montee_relance      double precision,
+  apres_montee_effort       double precision,
+  apres_montee_recuperation double precision,
+  apres_montee_n            double precision,
+  apres_montee_ref_kmh      double precision,
+  apres_descente_relance      double precision,
+  apres_descente_effort       double precision,
+  apres_descente_recuperation double precision,
+  apres_descente_n            double precision,
+  apres_descente_ref_kmh      double precision,
+  gap_kmh       double precision,
+  vam           double precision,
+  desc_kmh      double precision,
+  desc_hr_cost  double precision,
+  up_hr_cost    double precision,
+  hr_cost       double precision,
+  drift         double precision,
+  hr_mean       double precision,
+  hrr_mean      double precision,
+  cad_up        double precision,
+  walk_share    double precision,
+  share_up      double precision,
+  share_down    double precision,
+  notes         text,
+  planned_key   text
+);
+
+create table if not exists slope_bins (
+  activity_id   text references activities(activity_id) on delete cascade,
+  date          timestamptz,
+  bande         text,
+  pente_centre  double precision,
+  temps_min     double precision,
+  distance_km   double precision,
+  vitesse_kmh   double precision,
+  gap_kmh       double precision,
+  fc            double precision,
+  cadence       double precision,
+  cout_fc       double precision,
+  part_marche   double precision,
+  temps_marche_min double precision,
+  temps_course_min double precision,
+  v_marche_kmh  double precision,
+  v_course_kmh  double precision,
+  cout_marche   double precision,
+  cout_course   double precision,
+  primary key (activity_id, bande)
+);
+create index if not exists slope_bins_pente_idx on slope_bins (pente_centre);
+
+create table if not exists journal (
+  planned_key   text primary key,
+  fait          boolean,
+  rpe           double precision,
+  genou_j1      double precision,
+  genou_j2      double precision,
+  commentaire   text,
+  maj           timestamptz
+);
+
+create table if not exists courses (
+  course_id     text primary key,
+  nom           text,
+  distance_km   double precision,
+  d_plus        double precision,
+  d_minus       double precision,
+  ke_km         double precision,
+  v30           double precision,
+  v60           double precision,
+  v120          double precision,
+  poids_kg      double precision,
+  w_moyen       double precision,
+  w_max_5s      double precision,
+  w15           double precision,
+  w30           double precision,
+  w60           double precision,
+  wkg_moyen     double precision,
+  wkg_max_5s    double precision,
+  wkg15         double precision,
+  wkg30         double precision,
+  wkg60         double precision,
+  deq_km        double precision,
+  profil        text,
+  importe_le    timestamptz
+);
+
+create table if not exists tokens (
+  provider      text primary key,
+  access_token  text,
+  refresh_token text,
+  expires_at    bigint
+);
