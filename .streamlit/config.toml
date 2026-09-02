@@ -1,0 +1,11 @@
+# Charte reprise du plan Templiers : papier, encre, bistre.
+[theme]
+base = "light"
+primaryColor = "#9A6636"
+backgroundColor = "#EFEDE4"
+secondaryBackgroundColor = "#FAF9F4"
+textColor = "#1F2C27"
+font = "serif"
+
+[server]
+maxUploadSize = 50
