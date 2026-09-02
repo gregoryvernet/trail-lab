@@ -25,8 +25,8 @@ from engine.store import get_store, ACTIVITIES, SLOPE_BINS, TOKENS, JOURNAL, COU
 
 st.set_page_config(page_title="Trail Lab", page_icon="⛰️", initial_sidebar_state="collapsed")
 
-APP_VERSION = "2026-08-27-E"
-VERSION = "2026-08-27-E"
+APP_VERSION = "2026-08-27-F"
+VERSION = "2026-08-27-F"
 
 PLOTLY_CFG = {"displayModeBar": False, "scrollZoom": False}
 
@@ -1631,9 +1631,7 @@ def tab_plan(store):
     today = pd.Timestamp.now().normalize()
 
     semaines = sorted(rec["semaine"].dropna().unique())
-    proche = rec.loc[(rec["date"] >= today - pd.Timedelta(days=6))
-                     & (rec["date"] <= today + pd.Timedelta(days=6)), "semaine"]
-    courante = int(proche.iloc[0]) if len(proche) else int(semaines[0])
+    courante = plan_mod.semaine_du_jour(rec, today, semaines)
 
     charge_chart(plan_mod.load_profile(p), courante)
 
