@@ -25,8 +25,8 @@ from engine.store import get_store, ACTIVITIES, SLOPE_BINS, TOKENS, JOURNAL, COU
 
 st.set_page_config(page_title="Trail Lab", page_icon="⛰️", initial_sidebar_state="collapsed")
 
-APP_VERSION = "2026-08-27-F"
-VERSION = "2026-08-27-F"
+APP_VERSION = "2026-08-27-H"
+VERSION = "2026-08-27-H"
 
 PLOTLY_CFG = {"displayModeBar": False, "scrollZoom": False}
 
@@ -1422,6 +1422,45 @@ def _ravitos_vers_base(store, nom_course: str, marques: pd.DataFrame) -> None:
     }]), key="course_id")
 
 
+def _bandeau_base(store) -> None:
+    """
+    Ligne d'état sous le titre : à quand remonte la dernière activité.
+
+    Remplace le numéro de version, qui n'apprenait rien d'utile au
+    quotidien. La question qu'on se pose en ouvrant l'application est de
+    savoir si la base est à jour — pas quelle révision du code tourne. Les
+    versions restent consultables dans les réglages, là où elles servent
+    au diagnostic.
+    """
+    try:
+        hist = lire(store, ACTIVITIES)
+    except Exception:
+        note(f"version {VERSION}")
+        return
+    if hist.empty:
+        note("Base vide — importe ton historique depuis Réglages.")
+        return
+
+    d = pd.to_datetime(hist["date"], errors="coerce", utc=True,
+                       format="mixed").dt.tz_localize(None).dropna()
+    if d.empty:
+        note(f"{len(hist)} activités en base")
+        return
+
+    derniere = d.max()
+    jours = (pd.Timestamp.now().normalize() - derniere.normalize()).days
+    quand = ("aujourd'hui" if jours <= 0 else "hier" if jours == 1
+             else f"il y a {jours} jours")
+    # Au-delà d'une semaine, on le signale : c'est le signe qu'un import
+    # a été oublié.
+    couleur = BAD if jours > 7 else SOFT
+    st.markdown(
+        f"<div class='note'>Dernière activité "
+        f"<b style='color:{couleur}'>{derniere:%d/%m/%Y}</b> · {quand}"
+        f" &nbsp;·&nbsp; {len(hist)} activités en base</div>",
+        unsafe_allow_html=True)
+
+
 def _bloc_ravitos(store, d, pred, curve, bins, runs, nom_course=""):
     """
     Repères placés à la main, temps de passage calculés.
@@ -1937,8 +1976,44 @@ def tab_reglages(store, hr_rest, hr_max):
         note("Pour corriger : change le type dans Strava et réexporte "
              "l'archive, ou modifie la colonne `discipline` dans Supabase.")
 
+    st.subheader("État de la base")
+    hist = lire(store, ACTIVITIES)
+    if hist.empty:
+        st.info("Aucune activité en base.")
+    else:
+        d = pd.to_datetime(hist["date"], errors="coerce", utc=True,
+                           format="mixed").dt.tz_localize(None)
+        derniere = d.max()
+        jours = (pd.Timestamp.now().normalize() - derniere.normalize()).days
+        ligne = hist.loc[d.idxmax()]
+
+        a, b = st.columns(2)
+        a.metric("Dernière activité", f"{derniere:%d/%m/%Y}",
+                 f"il y a {jours} jour(s)" if jours else "aujourd'hui",
+                 delta_color="off")
+        b.metric("Activités en base", f"{len(hist)}",
+                 f"depuis le {d.min():%d/%m/%Y}", delta_color="off")
+        note(f"La plus récente : « {ligne.get('name', '?')} » · "
+             f"{DISCIPLINE_LABELS.get(ligne.get('discipline'), ligne.get('sport', '?'))} · "
+             f"{ligne.get('distance_km', 0):.1f} km · "
+             f"{ligne.get('d_plus', 0):.0f} D+")
+
+        # Ce qui reste à importer, discipline par discipline : c'est la
+        # question qu'on se pose avant un import, pas le total en base.
+        recap = (hist.assign(jour=d.dt.date)
+                 .groupby(hist["discipline"].fillna("?"), observed=True)
+                 .agg(n=("activity_id", "size"), derniere=("date", "max")))
+        recap["derniere"] = pd.to_datetime(recap["derniere"], errors="coerce",
+                                           utc=True, format="mixed"
+                                           ).dt.tz_localize(None).dt.strftime("%d/%m/%Y")
+        recap.index = [DISCIPLINE_LABELS.get(i, i) for i in recap.index]
+        recap.columns = ["Activités", "Dernière"]
+        st.dataframe(recap, use_container_width=True)
+
     st.subheader("Stockage")
     st.write(f"Backend actif : `{store.backend}`")
+    note(f"interface {VERSION} · moteur {analysis.VERSION} · "
+         f"efforts {efforts.VERSION}")
     if store.backend == "local":
         st.warning("Stockage local : les données sont perdues à chaque "
                    "redémarrage sur Streamlit Cloud. Configure Supabase avant "
@@ -1951,7 +2026,7 @@ def main():
 
     st.markdown(CSS, unsafe_allow_html=True)
     st.title("Trail Lab")
-    note(f"version {VERSION} · moteur {analysis.VERSION}")
+    _bandeau_base(store)
     st.caption(f"version {APP_VERSION}")
     hr_rest = st.session_state.get("hr_rest", 50)
     hr_max = st.session_state.get("hr_max", 190)
