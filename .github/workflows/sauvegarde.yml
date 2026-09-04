@@ -1,0 +1,61 @@
+# Sauvegarde hebdomadaire, et surtout maintien de la base en éveil.
+#
+# Supabase suspend les projets gratuits après une semaine sans requête.
+# Cette action interroge donc la base tous les lundis, ce qui suffit à
+# remettre le compteur à zéro. La sauvegarde committée en est l'effet
+# secondaire utile.
+#
+# ATTENTION AUX SECRETS. Le dépôt est public, donc les journaux
+# d'exécution le sont aussi. La clé Supabase passe par les secrets du
+# dépôt et n'est jamais affichée : backup.py ne l'imprime nulle part.
+# Les secrets à créer dans Settings → Secrets and variables → Actions :
+#   SUPABASE_URL
+#   SUPABASE_KEY   (la clé anon, jamais service_role)
+
+name: Sauvegarde hebdomadaire
+
+on:
+  schedule:
+    # Tous les lundis à 6h UTC. Les tâches planifiées de GitHub peuvent
+    # démarrer avec du retard en cas de charge : ce n'est pas un problème
+    # ici, seule la fréquence compte.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:        # déclenchement manuel depuis l'onglet Actions
+
+# Nécessaire pour que l'action puisse committer les fichiers produits.
+permissions:
+  contents: write
+
+jobs:
+  sauvegarde:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # Seuls les paquets nécessaires à la lecture : ni Streamlit, ni
+      # Plotly, ni les lecteurs de traces. L'action démarre en 20 s
+      # au lieu de 2 min.
+      - name: Dépendances
+        run: pip install pandas numpy supabase
+
+      - name: Sauvegarde
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python backup.py --dossier sauvegardes
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sauvegardes/
+          # Rien à committer si les données n'ont pas changé : on sort
+          # proprement au lieu d'échouer.
+          git diff --staged --quiet && echo "Aucun changement" && exit 0
+          git commit -m "Sauvegarde automatique $(date -u +%Y-%m-%d)"
+          git push
