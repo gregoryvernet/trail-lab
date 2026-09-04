@@ -21,14 +21,15 @@ import streamlit.components.v1 as components
 
 from engine import analysis, archive, bike, efforts, ingest, metrics, plan as plan_mod, predict, physio, sync as sync_mod
 from engine.archive import DISCIPLINE_LABELS
-from engine.store import get_store, ACTIVITIES, SLOPE_BINS, TOKENS, JOURNAL, COURSES
+from engine.store import (get_store, ACTIVITIES, SLOPE_BINS, TOKENS, JOURNAL,
+                          COURSES, TRACES)
 
 st.set_page_config(page_title="Trail Lab", page_icon="⛰️", initial_sidebar_state="collapsed")
 
 # Une seule constante. Il y en avait deux, APP_VERSION et VERSION, dont
 # l'une servait un st.caption oublié sous le titre — d'où la ligne de
 # version affichée en double.
-VERSION = "2026-08-27-I"
+VERSION = "2026-09-04-A"
 
 PLOTLY_CFG = {"displayModeBar": False, "scrollZoom": False}
 
@@ -1424,6 +1425,97 @@ def _ravitos_vers_base(store, nom_course: str, marques: pd.DataFrame) -> None:
     }]), key="course_id")
 
 
+# Rappel de sauvegarde : deux semaines. Au-delà, l'oubli devient probable
+# et l'écart entre la base et la dernière copie commence à peser.
+JOURS_RAPPEL = 14
+
+
+def _bloc_sauvegarde(store) -> None:
+    """
+    Archive complète téléchargeable, points GPS compris.
+
+    Distincte de la sauvegarde automatique hebdomadaire, dont le rôle
+    premier est d'empêcher la suspension du projet Supabase pour
+    inactivité. Celle-ci produit un fichier unique, chez toi, indépendant
+    de tout service — la seule copie qui survive à la disparition du
+    compte.
+    """
+    st.subheader("Sauvegarde complète")
+
+    derniere = st.session_state.get("_derniere_sauvegarde")
+    if derniere:
+        jours = (pd.Timestamp.now() - pd.Timestamp(derniere)).days
+        if jours >= JOURS_RAPPEL:
+            st.warning(f"Dernière sauvegarde téléchargée il y a {jours} jours. "
+                       "Pense à en reprendre une.")
+        else:
+            note(f"Dernière sauvegarde téléchargée il y a {jours} jour(s).")
+    else:
+        note("Aucune sauvegarde téléchargée depuis cette session. "
+             "L'archive contient tout, points GPS compris — c'est la seule "
+             "copie indépendante de Supabase.")
+
+    if not st.button("Préparer l'archive", key="prep_zip"):
+        return
+
+    import io as _io
+    import zipfile as _zip
+
+    tampon = _io.BytesIO()
+    jour = pd.Timestamp.now().strftime("%Y-%m-%d")
+    resume = []
+    with _zip.ZipFile(tampon, "w", _zip.ZIP_DEFLATED, compresslevel=6) as z:
+        for table in (ACTIVITIES, SLOPE_BINS, JOURNAL, COURSES):
+            try:
+                df = lire(store, table)
+            except Exception as e:
+                resume.append(f"{table} : échec ({type(e).__name__})")
+                continue
+            z.writestr(f"{table}.csv",
+                       df.to_csv(index=False, encoding="utf-8-sig"))
+            resume.append(f"{table} : {len(df)} lignes")
+
+        # Les traces, décompressées en CSV lisibles : une sauvegarde doit
+        # rester exploitable sans le code qui l'a produite.
+        try:
+            tr = lire(store, TRACES)
+        except Exception:
+            tr = pd.DataFrame()
+        if not tr.empty and "donnees" in tr.columns:
+            from engine.store import decompresser_trace
+            n_ok = 0
+            for _, r in tr.iterrows():
+                try:
+                    pts = decompresser_trace(r["donnees"])
+                    z.writestr(f"traces/{r['activity_id']}.csv",
+                               pts.to_csv(index=False))
+                    n_ok += 1
+                except Exception:
+                    continue
+            resume.append(f"traces : {n_ok} sorties, points GPS")
+        else:
+            resume.append("traces : aucune (réimporte pour les enregistrer)")
+
+        z.writestr("LISEZ-MOI.txt",
+                   "Sauvegarde Trail Lab du " + jour + "\n\n"
+                   + "\n".join(resume)
+                   + "\n\nRestauration : coller schema.sql dans Supabase, "
+                     "puis réinjecter les CSV avec store.upsert. Les clés "
+                     "sont activity_id, (activity_id, bande) pour "
+                     "slope_bins, planned_key pour journal, course_id pour "
+                     "courses.\n"
+                     "Les traces sont des CSV de points bruts, une par "
+                     "sortie : t, lat, lon, ele, hr, cad, power.\n")
+
+    st.session_state["_derniere_sauvegarde"] = pd.Timestamp.now().isoformat()
+    taille = tampon.tell() / 1024 / 1024
+    st.download_button(
+        f"Télécharger ({taille:.1f} Mo)", tampon.getvalue(),
+        file_name=f"trail-lab-sauvegarde-{jour}.zip", mime="application/zip",
+        key="dl_zip", type="primary")
+    note(" · ".join(resume))
+
+
 def _bandeau_base(store) -> None:
     """
     Ligne d'état sous le titre : à quand remonte la dernière activité.
@@ -1977,6 +2069,8 @@ def tab_reglages(store, hr_rest, hr_max):
                      use_container_width=True)
         note("Pour corriger : change le type dans Strava et réexporte "
              "l'archive, ou modifie la colonne `discipline` dans Supabase.")
+
+    _bloc_sauvegarde(store)
 
     st.subheader("État de la base")
     hist = lire(store, ACTIVITIES)
