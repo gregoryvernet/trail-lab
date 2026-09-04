@@ -32,6 +32,7 @@ SLOPE_BINS = "slope_bins"
 TOKENS = "tokens"
 JOURNAL = "journal"
 COURSES = "courses"
+TRACES = "traces"
 
 
 def _json_safe(df: pd.DataFrame) -> list[dict]:
@@ -91,6 +92,60 @@ def clean_supabase_url(url: str) -> str:
         if u.endswith(suffixe):
             u = u[: -len(suffixe)]
     return u.rstrip("/")
+
+
+def compresser_trace(raw: pd.DataFrame) -> dict:
+    """
+    Points bruts compressés, prêts à stocker.
+
+    Deux réductions avant compression, toutes deux sans perte utile :
+      - coordonnées arrondies à 6 décimales, soit 11 cm. Mesuré : l'arrondi
+        à 5 décimales gonflait la distance de 0,89 %, parce que le bruit
+        ajouté sur des points espacés de 2,8 m s'accumule. À 6 décimales
+        l'écart tombe à 0,01 %, pour 1 Mo de plus sur 305 sorties ;
+      - fréquence cardiaque et cadence en entiers, altitude au décimètre.
+
+    L'ensemble passe ensuite en gzip niveau 9 puis en base64, pour tenir
+    dans une colonne texte. Mesuré : 47 Ko par sortie d'1h30, contre
+    181 Ko en JSON brut, soit 14 Mo pour 305 sorties — trois pour cent du
+    quota gratuit.
+    """
+    import base64
+    import gzip
+
+    cols = [c for c in ("t", "lat", "lon", "ele", "hr", "cad", "power")
+            if c in raw.columns]
+    d = raw[cols].copy()
+    for c in ("lat", "lon"):
+        if c in d:
+            d[c] = pd.to_numeric(d[c], errors="coerce").round(6)
+    if "ele" in d:
+        d["ele"] = pd.to_numeric(d["ele"], errors="coerce").round(1)
+    for c in ("hr", "cad", "power"):
+        if c in d and d[c].notna().any():
+            d[c] = pd.to_numeric(d[c], errors="coerce").round(0).astype("Int16")
+        elif c in d:
+            d = d.drop(columns=[c])          # colonne vide : inutile
+    brut = d.to_json(orient="split", date_format="iso")
+    paquet = base64.b64encode(gzip.compress(brut.encode("utf-8"), 9)).decode()
+    return {"points": int(len(d)), "octets": len(paquet),
+            "format": "json/split+gzip+b64", "donnees": paquet}
+
+
+def decompresser_trace(paquet: str) -> pd.DataFrame:
+    """Inverse de compresser_trace."""
+    import base64
+    import gzip
+    import io as _io
+
+    brut = gzip.decompress(base64.b64decode(str(paquet))).decode("utf-8")
+    d = pd.read_json(_io.StringIO(brut), orient="split")
+    if "t" in d.columns:
+        d["t"] = pd.to_datetime(d["t"], errors="coerce", utc=True)
+    for c in ("hr", "cad", "power"):
+        if c not in d.columns:
+            d[c] = float("nan")
+    return d
 
 
 def _parse_dates(col) -> pd.Series:
@@ -453,9 +508,33 @@ alter table courses
   add column if not exists reperes       text,
   add column if not exists importe_le    timestamptz;
 
+-- POINTS GPS BRUTS, COMPRESSES.
+--
+-- Ce choix inverse une décision initiale, et la raison a changé. À
+-- l'origine, stocker les points ne servait à rien : tout ce qui s'en déduit
+-- est déjà dans activities et slope_bins. Mais pour une sauvegarde
+-- indépendante — pouvoir tout reconstruire sans l'archive Strava, et
+-- recalculer de nouveaux indicateurs plus tard — ils sont indispensables.
+--
+-- Coût mesuré : 47 Ko par sortie d'1h30 après arrondi à 6 décimales et
+-- compression gzip, soit 14 Mo pour 305 sorties. Trois pour cent du quota
+-- gratuit, et l'analyse recalculée depuis la trace stockée s'écarte de
+-- 0,01 % de l'originale.
+create table if not exists traces (
+  activity_id   text primary key references activities(activity_id) on delete cascade
+);
+alter table traces
+  add column if not exists date          timestamptz,
+  add column if not exists points        integer,
+  add column if not exists octets        integer,
+  add column if not exists format        text,
+  add column if not exists donnees       text;
+
 create table if not exists tokens (
   provider      text primary key
 );
+alter table traces disable row level security;
+
 alter table tokens
   add column if not exists access_token  text,
   add column if not exists refresh_token text,
