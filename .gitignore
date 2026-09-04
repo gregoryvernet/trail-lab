@@ -1,12 +1,30 @@
+# Environnement Python
 __pycache__/
 *.pyc
 .venv/
 venv/
 .env
+
+# SECRETS — ne doivent jamais partir sur un dépôt public.
 .streamlit/secrets.toml
+
+# Données personnelles et fichiers d'activité
 data/
 *.gpx
 *.tcx
 *.fit
+*.zip
+disciplines.csv
+
+# Tous les CSV sont exclus par principe (données d'entraînement)...
 *.csv
+# ... SAUF le plan, dont l'application a besoin pour fonctionner...
+!data_plan_templiers_2026.csv
+# ... et les sauvegardes automatiques, que l'action GitHub doit pouvoir
+# committer. Elles contiennent des données d'entraînement personnelles mais
+# aucun secret : la table des jetons Strava est délibérément exclue de
+# backup.py.
+!sauvegardes/
+!sauvegardes/*.csv
+
 .DS_Store
