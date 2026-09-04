@@ -1,19 +1,23 @@
-# Rappel de sauvegarde, toutes les deux semaines.
+# Rappel de sauvegarde complète, le 1er et le 15 de chaque mois.
 #
 # COMMENT LE COURRIEL ARRIVE. GitHub notifie par courriel l'ouverture d'une
 # issue sur un dépôt qu'on suit — et on suit le sien par défaut. Créer une
-# issue est donc le moyen le plus simple d'être averti, sans service tiers,
-# sans clé d'API, sans configuration.
+# issue est donc le moyen le plus simple d'être averti : aucun service
+# tiers, aucune clé d'API, aucun secret à créer.
 #
-# Le rappel se distingue de la sauvegarde hebdomadaire : celle-ci empêche la
-# suspension du projet Supabase, celui-ci invite à emporter une copie
-# complète chez soi, points GPS compris.
+# Ce rappel se distingue de la sauvegarde hebdomadaire automatique : celle-ci
+# empêche la suspension du projet Supabase pour inactivité, celui-ci invite
+# à emporter une copie complète chez soi, points GPS compris.
+#
+# NOTE DE SYNTAXE. Le corps du message passe par une variable
+# d'environnement en scalaire de bloc, et non par un heredoc dans le `run` :
+# un heredoc y casse l'indentation attendue par l'analyseur YAML, ce qui
+# rend le fichier invalide.
 
 name: Rappel de sauvegarde
 
 on:
   schedule:
-    # Le 1er et le 15 de chaque mois, à 8h UTC.
     - cron: "0 8 1,15 * *"
   workflow_dispatch:
 
@@ -23,39 +27,37 @@ permissions:
 jobs:
   rappel:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      CORPS: |
+        Ouvre l'application, onglet **Réglages**, section **Sauvegarde
+        complète** : *Préparer l'archive* puis *Télécharger*.
 
-      - name: Ouvrir le rappel
-        env:
-          GH_TOKEN: ${{ github.token }}
+        L'archive contient tout — activités, bandes de pente, journal du
+        plan, repères de course, et les **points GPS bruts** de chaque
+        sortie. C'est la seule copie indépendante de Supabase.
+
+        Range-la ailleurs que dans le dossier du projet, puis ferme cette
+        issue.
+
+        ---
+        *La sauvegarde hebdomadaire automatique ne contient pas les points
+        GPS : son rôle est d'empêcher la suspension du projet Supabase pour
+        inactivité.*
+    steps:
+      - name: Étiquette
+        continue-on-error: true
+        run: gh label create sauvegarde --color 9A6636 --description "Rappel de sauvegarde"
+
+      - name: Ouvrir ou relancer le rappel
         run: |
-          # Ne pas empiler les rappels : si le précédent n'a pas été fermé,
+          # Ne pas empiler les rappels : si le précédent est encore ouvert,
           # c'est que la sauvegarde n'a pas été faite. Un commentaire suffit.
-          OUVERTE=$(gh issue list --label sauvegarde --state open \
-                    --json number --jq '.[0].number // empty')
+          OUVERTE=$(gh issue list --label sauvegarde --state open --json number --jq '.[0].number // empty')
           DATE=$(date -u +%d/%m/%Y)
           if [ -n "$OUVERTE" ]; then
-            gh issue comment "$OUVERTE" --body \
-              "Rappel du $DATE : toujours pas de sauvegarde complète."
-            exit 0
+            gh issue comment "$OUVERTE" --body "Rappel du $DATE : toujours pas de sauvegarde complète."
+          else
+            gh issue create --title "Sauvegarde complète à télécharger — $DATE" --label sauvegarde --body "$CORPS"
           fi
-          gh issue create \
-            --title "Sauvegarde complète à télécharger — $DATE" \
-            --label sauvegarde \
-            --body "$(cat <<'TXT'
-Ouvre l'application, onglet **Réglages** → section **Sauvegarde complète**
-→ *Préparer l'archive* → *Télécharger*.
-
-L'archive contient tout : activités, bandes de pente, journal du plan,
-repères de course, et les **points GPS bruts** de chaque sortie. C'est la
-seule copie indépendante de Supabase.
-
-Range-la ailleurs que dans le dossier du projet, puis ferme cette issue.
-
----
-*La sauvegarde hebdomadaire automatique, elle, ne contient pas les points
-GPS : son rôle est d'empêcher la suspension du projet Supabase pour
-inactivité.*
-TXT
-)"
