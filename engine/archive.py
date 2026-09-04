@@ -47,7 +47,7 @@ import numpy as np
 import pandas as pd
 
 from engine import analysis, bike, efforts, elevation, ingest, metrics, predict
-from engine.store import ACTIVITIES, SLOPE_BINS
+from engine.store import ACTIVITIES, SLOPE_BINS, TRACES
 from engine.sync import BIN_CENTERS, classify_terrain
 
 # Les en-têtes de activities.csv changent selon la langue du compte et la
@@ -370,8 +370,25 @@ def _open_track(zf: zipfile.ZipFile, filename: str):
     return io.BytesIO(data), os.path.splitext(inner)[-1].lower()
 
 
+def _stocker_trace(store, activity_id, date, raw) -> None:
+    """
+    Enregistre les points bruts, sans faire échouer l'import en cas de
+    problème : la trace est un complément de sauvegarde, pas une donnée
+    dont dépend l'analyse.
+    """
+    from engine.store import compresser_trace
+    try:
+        p = compresser_trace(raw)
+        store.upsert(TRACES, pd.DataFrame([{
+            "activity_id": str(activity_id), "date": date, **p}]),
+            key="activity_id")
+    except Exception:
+        pass
+
+
 def import_archive(zip_source, store, hr_rest: float = 50, hr_max: float = 190,
                    ftp: float | None = None, poids_kg: float | None = None,
+                   garder_traces: bool = True,
                    sports=("trail", "rando", "velo"),
                    limit: int | None = None, progress=None,
                    fill_elevation: bool = False,
@@ -572,7 +589,7 @@ def reconcile_type(detected: str, strava_label: str) -> str:
 
 def import_folder(folder, store, hr_rest: float = 50, hr_max: float = 190,
                   ftp: float | None = None, poids_kg: float | None = None,
-                  progress=None,
+                  garder_traces: bool = True, progress=None,
                   fill_elevation: bool = False) -> dict:
     """
     Importe un dossier de fichiers TCX / FIT / GPX déjà présents sur le disque.
