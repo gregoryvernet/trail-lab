@@ -1,0 +1,61 @@
+# Rappel de sauvegarde, toutes les deux semaines.
+#
+# COMMENT LE COURRIEL ARRIVE. GitHub notifie par courriel l'ouverture d'une
+# issue sur un dépôt qu'on suit — et on suit le sien par défaut. Créer une
+# issue est donc le moyen le plus simple d'être averti, sans service tiers,
+# sans clé d'API, sans configuration.
+#
+# Le rappel se distingue de la sauvegarde hebdomadaire : celle-ci empêche la
+# suspension du projet Supabase, celui-ci invite à emporter une copie
+# complète chez soi, points GPS compris.
+
+name: Rappel de sauvegarde
+
+on:
+  schedule:
+    # Le 1er et le 15 de chaque mois, à 8h UTC.
+    - cron: "0 8 1,15 * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  rappel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ouvrir le rappel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Ne pas empiler les rappels : si le précédent n'a pas été fermé,
+          # c'est que la sauvegarde n'a pas été faite. Un commentaire suffit.
+          OUVERTE=$(gh issue list --label sauvegarde --state open \
+                    --json number --jq '.[0].number // empty')
+          DATE=$(date -u +%d/%m/%Y)
+          if [ -n "$OUVERTE" ]; then
+            gh issue comment "$OUVERTE" --body \
+              "Rappel du $DATE : toujours pas de sauvegarde complète."
+            exit 0
+          fi
+          gh issue create \
+            --title "Sauvegarde complète à télécharger — $DATE" \
+            --label sauvegarde \
+            --body "$(cat <<'TXT'
+Ouvre l'application, onglet **Réglages** → section **Sauvegarde complète**
+→ *Préparer l'archive* → *Télécharger*.
+
+L'archive contient tout : activités, bandes de pente, journal du plan,
+repères de course, et les **points GPS bruts** de chaque sortie. C'est la
+seule copie indépendante de Supabase.
+
+Range-la ailleurs que dans le dossier du projet, puis ferme cette issue.
+
+---
+*La sauvegarde hebdomadaire automatique, elle, ne contient pas les points
+GPS : son rôle est d'empêcher la suspension du projet Supabase pour
+inactivité.*
+TXT
+)"
