@@ -25,8 +25,10 @@ from engine.store import get_store, ACTIVITIES, SLOPE_BINS, TOKENS, JOURNAL, COU
 
 st.set_page_config(page_title="Trail Lab", page_icon="⛰️", initial_sidebar_state="collapsed")
 
-APP_VERSION = "2026-08-27-H"
-VERSION = "2026-08-27-H"
+# Une seule constante. Il y en avait deux, APP_VERSION et VERSION, dont
+# l'une servait un st.caption oublié sous le titre — d'où la ligne de
+# version affichée en double.
+VERSION = "2026-08-27-I"
 
 PLOTLY_CFG = {"displayModeBar": False, "scrollZoom": False}
 
@@ -2026,11 +2028,13 @@ def main():
 
     st.markdown(CSS, unsafe_allow_html=True)
     st.title("Trail Lab")
-    _bandeau_base(store)
-    st.caption(f"version {APP_VERSION}")
+
     hr_rest = st.session_state.get("hr_rest", 50)
     hr_max = st.session_state.get("hr_max", 190)
     store = get_store(dict(st.secrets))
+
+    # Le bandeau lit la base : il doit venir APRÈS la création du store.
+    _bandeau_base(store)
 
     t1, t2, t3, t4, t5, t6, t7 = st.tabs(
         ["Sortie", "Historique", "Tendance", "Vélo", "Course", "Plan",
