@@ -718,8 +718,15 @@ def _guess_sport(raw: pd.DataFrame) -> str:
         dist = metrics.haversine(lat[:-1], lon[:-1], lat[1:], lon[1:])
         ok = (dt > 0) & (dt < 30) & ~np.isnan(dist)
         if ok.sum() > 30:
-            v = dist[ok] / dt[ok]
-            v = v[v < 30]                      # anti-décrochage GPS
+            # Le filtre anti-décrochage doit rester un MASQUE, pas une
+            # réaffectation. La version précédente écrivait v = v[v < 30],
+            # ce qui raccourcissait v sans raccourcir la cadence extraite
+            # plus bas : les deux tableaux n'avaient alors plus la même
+            # taille et la comparaison échouait. Le défaut ne se
+            # manifestait que sur une trace contenant au moins un saut GPS.
+            v_brut = dist[ok] / dt[ok]
+            sain = v_brut < 30
+            v = v_brut[sain]
             if len(v) > 30:
                 pointe = float(np.quantile(v, 0.97))
                 if pointe > 10.0:
@@ -733,7 +740,7 @@ def _guess_sport(raw: pd.DataFrame) -> str:
 
                 # Roue libre : vite sans pédaler.
                 if len(cad) > 50 and len(raw) > 100:
-                    c = raw["cad"].to_numpy(dtype=float)[1:][ok]
+                    c = raw["cad"].to_numpy(dtype=float)[1:][ok][sain]
                     rapide = v > np.quantile(v, 0.6)
                     libre = rapide & ((c == 0) | np.isnan(c))
                     part = float(libre.sum() / max(rapide.sum(), 1))
