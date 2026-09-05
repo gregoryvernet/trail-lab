@@ -63,8 +63,10 @@ def _rolling_median(x: np.ndarray, window: int) -> np.ndarray:
     return s.rolling(window, center=True, min_periods=1).median().to_numpy()
 
 
-# Plafonds anti-décrochage GPS, par sport. Au-delà, c'est une
-# téléportation — en dessous, on ampute des données valides.
+# Plafonds anti-décrochage GPS, par discipline. Au-delà, c'est une
+# téléportation — en dessous, on ampute des données valides. Un plafond de
+# 8 m/s, conçu pour la course, écartait 1 454 segments sur 3 789 d'une
+# sortie vélo et ramenait 26,7 km à 13,1 km, sans le moindre avertissement.
 MAX_SPEED = {"trail": 8.0, "route": 8.0, "rando": 6.0,
              "velo": 25.0, "vtt": 25.0, "velo_route": 30.0, "gravel": 28.0}
 
@@ -75,17 +77,13 @@ def max_speed_for(sport: str | None) -> float:
 
 def guess_max_speed(df: pd.DataFrame) -> float:
     """
-    Plafond déduit de la trace elle-même, quand le sport n'est pas connu.
-
-    Le plafond de 8 m/s conçu pour la course écartait 1 454 segments sur
-    3 789 d'une sortie vélo, ramenant 26,7 km à 13,1 km — sans le moindre
-    avertissement. Or l'onglet d'analyse d'une sortie ne connaît pas le
-    sport avant d'avoir lu le fichier.
-    
-    On regarde donc la vitesse médiane brute : au-delà de 4 m/s soutenus,
-    aucun coureur n'est concerné, et le plafond vélo s'applique.
+    Plafond déduit de la trace, quand la discipline n'est pas connue —
+    cas de l'onglet d'analyse, qui lit le fichier avant de savoir ce
+    qu'il contient. Au-delà de 4 m/s de médiane, aucun coureur n'est
+    concerné.
     """
-    lat, lon = df["lat"].to_numpy(dtype=float), df["lon"].to_numpy(dtype=float)
+    lat = df["lat"].to_numpy(dtype=float)
+    lon = df["lon"].to_numpy(dtype=float)
     if np.isnan(lat).all() or len(df) < 30:
         return 8.0
     dt = df["t"].diff().dt.total_seconds().to_numpy()[1:]
@@ -94,14 +92,10 @@ def guess_max_speed(df: pd.DataFrame) -> float:
     if ok.sum() < 20:
         return 8.0
     v = d[ok] / dt[ok]
-    v = v[v < 40]                        # écarte les décrochages francs
+    v = v[v < 40]
     if len(v) < 20:
         return 8.0
-    med = float(np.median(v))
-    if med > 4.0:                        # 14,4 km/h de médiane
-        return 30.0
-    # Un coureur peut atteindre 7 m/s en descente : on garde de la marge.
-    return 8.0
+    return 30.0 if float(np.median(v)) > 4.0 else 8.0
 
 
 def prepare(df: pd.DataFrame, slope_window_m: float = 30.0,
@@ -171,6 +165,21 @@ def prepare(df: pd.DataFrame, slope_window_m: float = 30.0,
     if np.isnan(ele).all():
         ele = np.zeros(n)
     else:
+        # DÉCROCHAGES D'ALTIMÈTRE. Certains capteurs renvoient une salve de
+        # zéros lors d'un arrêt ou d'une perte de signal. Observé sur une
+        # sortie vélo : trente points à 0 m au milieu d'un parcours situé
+        # entre 400 et 870 m, ce qui créait à lui seul 614 m de dénivelé
+        # fictif à la reprise. Une valeur écartée de plus de 100 m de la
+        # médiane locale ne peut pas être réelle sur quelques secondes.
+        fini = np.isfinite(ele)
+        if fini.sum() > 20:
+            med = float(np.median(ele[fini]))
+            etendue = float(np.percentile(ele[fini], 99)
+                            - np.percentile(ele[fini], 1))
+            marge = max(300.0, etendue * 1.5)
+            aberrant = fini & (np.abs(ele - med) > marge)
+            if aberrant.any() and aberrant.sum() < fini.sum() * 0.2:
+                ele = np.where(aberrant, np.nan, ele)
         ele = pd.Series(ele).interpolate(limit_direction="both").to_numpy()
     # Médiane glissante (retire les spikes) puis moyenne (retire le grain)
     # Fenêtres de lissage exprimées en points : il faut les adapter à
@@ -221,6 +230,7 @@ def prepare(df: pd.DataFrame, slope_window_m: float = 30.0,
 
     d["slope_bin"] = pd.cut(d["slope"], bins=SLOPE_BINS, labels=SLOPE_LABELS)
     d.attrs["max_speed"] = float(max_speed_ms)
+    d.attrs.setdefault("totaux_appareil", df.attrs.get("totaux_appareil", {}))
     return d
 
 
@@ -234,7 +244,13 @@ def wmean(values, weights) -> float:
 # ── Indicateurs de sortie ────────────────────────────────────────────────────
 
 def summarize(d: pd.DataFrame, hr_rest: float = 50, hr_max: float = 190) -> dict:
-    """KPI d'une sortie. Toutes les moyennes sont pondérées par le temps."""
+    """
+    KPI d'une sortie. Toutes les moyennes sont pondérées par le temps.
+
+    Quand le fichier source porte les totaux calculés par l'appareil —
+    cas des FIT de compteurs à baromètre — ceux-ci remplacent les valeurs
+    recalculées de distance, dénivelé et durée. Voir `_appliquer_totaux`.
+    """
     dt = d["dt"].to_numpy()
     slope = d["slope"].to_numpy()
     up = slope > 0.05
@@ -252,6 +268,7 @@ def summarize(d: pd.DataFrame, hr_rest: float = 50, hr_max: float = 190) -> dict
         "d_plus": float(d["d_plus"].sum()),
         "d_minus": float(d["d_minus"].sum()),
         "duration_h": total_t / 3600,
+        "totaux_source": "calcul",
         "gap_kmh": wmean(d["gap"], dt) * 3.6,
         "share_up": float(dt[up].sum() / total_t),
         "share_down": float(dt[down].sum() / total_t),
@@ -288,8 +305,41 @@ def summarize(d: pd.DataFrame, hr_rest: float = 50, hr_max: float = 190) -> dict
 
     out["cad_up"] = wmean(d["cad"][up], dt[up])
     out["drift"] = decoupling(d)
-    return out
+    return _appliquer_totaux(out, d)
 
+
+def _appliquer_totaux(out: dict, d: pd.DataFrame) -> dict:
+    """
+    Substitue les totaux de l'appareil aux valeurs recalculées.
+
+    L'écart mesuré sur une sortie vélo réelle : 2 722 m de dénivelé
+    recalculé contre 1 370 annoncés par le compteur, et 4h40 de temps
+    écoulé contre 4h23 de temps en mouvement. Un compteur à baromètre
+    dispose d'un capteur que la trace ne restitue pas, et d'un filtrage
+    que la somme des hausses ne reproduit pas.
+
+    Les valeurs recalculées sont conservées sous un suffixe, pour pouvoir
+    comparer sans rien perdre. Ne s'applique qu'aux champs réellement
+    présents : un GPX n'en porte aucun.
+    """
+    t = d.attrs.get("totaux_appareil") or {}
+    if not t:
+        return out
+    remplaces = []
+    for cle in ("d_plus", "d_minus", "distance_km", "duration_h"):
+        v = t.get(cle)
+        if v is None or not np.isfinite(v) or v <= 0:
+            continue
+        # Garde-fou : un total absurde ne doit pas écraser un calcul sain.
+        ancien = out.get(cle)
+        if ancien and (v / ancien > 3 or v / ancien < 0.2):
+            continue
+        out[cle + "_calcule"] = ancien
+        out[cle] = float(v)
+        remplaces.append(cle)
+    if remplaces:
+        out["totaux_source"] = "appareil"
+    return out
 
 def decoupling(d: pd.DataFrame, min_seconds: float = 300) -> float:
     """
@@ -447,15 +497,15 @@ def session_profile(d: pd.DataFrame) -> dict:
     # La version précédente utilisait groupby.apply avec une lambda
     # renvoyant une Series : 63 ms par activité, soit les deux tiers du
     # temps total d'import. Pandas y crée un objet Python par bloc — cent
-    # quatre-vingts objets pour une sortie de trois heures, deux cent
-    # cinquante fois pour un rattrapage complet.
-    #
-    # np.bincount fait les mêmes sommes pondérées en une passe C.
+    # quatre-vingts pour une sortie de trois heures, deux cent cinquante
+    # fois pour un rattrapage complet. np.bincount fait les mêmes sommes
+    # pondérées en une passe, vingt fois plus vite.
     block = (np.cumsum(dt) // 60).astype(int)
     keep = dt > 0
-    b_ok = block[keep]
-    if len(b_ok) == 0:
+    if not keep.any():
+        out["session_type"] = "trop courte"
         return out
+    b_ok = block[keep]
     b_ok = b_ok - b_ok.min()
     nb = int(b_ok.max()) + 1
     w = dt[keep]
