@@ -249,7 +249,7 @@ def summarize(d: pd.DataFrame, hr_rest: float = 50, hr_max: float = 190) -> dict
 
     Quand le fichier source porte les totaux calculés par l'appareil —
     cas des FIT de compteurs à baromètre — ceux-ci remplacent les valeurs
-    recalculées de distance, dénivelé et durée. Voir `_appliquer_totaux`.
+    recalculées de distance, dénivelé et durée. Voir `appliquer_totaux`.
     """
     dt = d["dt"].to_numpy()
     slope = d["slope"].to_numpy()
@@ -305,10 +305,10 @@ def summarize(d: pd.DataFrame, hr_rest: float = 50, hr_max: float = 190) -> dict
 
     out["cad_up"] = wmean(d["cad"][up], dt[up])
     out["drift"] = decoupling(d)
-    return _appliquer_totaux(out, d)
+    return appliquer_totaux(out, d)
 
 
-def _appliquer_totaux(out: dict, d: pd.DataFrame) -> dict:
+def appliquer_totaux(out: dict, d: pd.DataFrame) -> dict:
     """
     Substitue les totaux de l'appareil aux valeurs recalculées.
 
