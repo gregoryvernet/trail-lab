@@ -355,7 +355,14 @@ def _sortie_velo(store, raw, d, disc, filename, hr_rest, hr_max):
     c1.metric("TRIMP", f"{s['trimp']:.0f}" if not np.isnan(s["trimp"]) else "—",
               plan_mod.fmt_minutes(s["trimp"] / 87 * 60)
               if not np.isnan(s["trimp"]) else None, delta_color="off")
-    c2.metric("D−", f"{d['d_minus'].sum():.0f} m")
+    # D− pris dans la synthèse, pas recalculé : sinon il échapperait à la
+    # substitution par les totaux de l'appareil.
+    c2.metric("D−", f"{s.get('d_minus', d['d_minus'].sum()):.0f} m")
+    if s.get("totaux_source") == "appareil":
+        note("Distance, dénivelé et durée proviennent du compteur, qui "
+             "dispose d'un baromètre. Le recalcul depuis la trace donnait "
+             f"{s.get('d_plus_calcule', float('nan')):.0f} m de D+ — le "
+             "bruit barométrique gonfle les micro-variations.")
 
     if not a_power:
         st.info(f"Aucune puissance de capteur ({s['power_source']}). "
