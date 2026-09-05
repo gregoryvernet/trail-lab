@@ -359,6 +359,15 @@ alter table activities
   add column if not exists discipline    text,
   add column if not exists discipline_source text,
   add column if not exists dplus_par_km  double precision,
+  -- Valeurs recalculées depuis la trace, conservées quand les totaux de
+  -- l'appareil prennent le dessus. Elles permettent de mesurer l'écart
+  -- plutôt que de le subir : sur une sortie vélo, le recalcul donnait
+  -- 2 289 m de D+ là où le compteur en annonçait 1 370.
+  add column if not exists totaux_source text,
+  add column if not exists d_plus_calcule      double precision,
+  add column if not exists d_minus_calcule     double precision,
+  add column if not exists distance_km_calcule double precision,
+  add column if not exists duration_h_calcule  double precision,
   add column if not exists date          timestamptz,
   add column if not exists name          text,
   add column if not exists notes         text,
