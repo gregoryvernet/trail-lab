@@ -51,16 +51,11 @@ def _finalize(rows: list[dict]) -> pd.DataFrame:
 def from_gpx(source) -> pd.DataFrame:
     import gpxpy
 
-    # Même précaution que pour le TCX : gpxpy s'appuie sur un analyseur XML
-    # tout aussi strict sur les octets précédant la déclaration.
     if isinstance(source, (str, os.PathLike)):
-        with open(source, "rb") as f:
-            raw = f.read()
+        with open(source, "r", encoding="utf-8") as f:
+            gpx = gpxpy.parse(f)
     else:
-        raw = source.read()
-        if isinstance(raw, str):
-            raw = raw.encode("utf-8")
-    gpx = gpxpy.parse(io.BytesIO(_clean_xml(raw)))
+        gpx = gpxpy.parse(source)
 
     rows = []
     for track in gpx.tracks:
@@ -89,32 +84,6 @@ def from_gpx(source) -> pd.DataFrame:
 
 # ── TCX ───────────────────────────────────────────────────────────────────────
 
-def _clean_xml(raw: bytes) -> bytes:
-    """
-    Retire ce qui précède la déclaration XML.
-
-    ElementTree applique la norme à la lettre : le moindre octet avant
-    `<?xml` provoque « XML or text declaration not at start of entity ».
-    Or beaucoup d'exportateurs écrivent un BOM UTF-8 (EF BB BF), parfois un
-    saut de ligne ou une tabulation. Sur l'archive Strava, cela concernait
-    57 fichiers sur 340 — soit un sixième de l'historique perdu pour trois
-    octets invisibles.
-
-    On accepte aussi les BOM UTF-16, qui imposent alors de laisser
-    ElementTree lire l'encodage déclaré.
-    """
-    if raw[:3] == b"\xef\xbb\xbf":            # BOM UTF-8
-        raw = raw[3:]
-    elif raw[:2] in (b"\xff\xfe", b"\xfe\xff"):   # BOM UTF-16
-        return raw
-
-    # Espaces, sauts de ligne ou tabulations avant la déclaration.
-    debut = raw.find(b"<")
-    if debut > 0 and raw[:debut].strip() == b"":
-        raw = raw[debut:]
-    return raw
-
-
 def from_tcx(source) -> pd.DataFrame:
     if isinstance(source, (str, os.PathLike)):
         with open(source, "rb") as f:
@@ -124,7 +93,7 @@ def from_tcx(source) -> pd.DataFrame:
         if isinstance(raw, str):
             raw = raw.encode("utf-8")
 
-    root = ET.fromstring(_clean_xml(raw))
+    root = ET.fromstring(raw)
 
     def local(elem, name):
         """Cherche un descendant par nom local, en ignorant le namespace."""
@@ -178,6 +147,26 @@ def from_tcx(source) -> pd.DataFrame:
 # ── FIT ───────────────────────────────────────────────────────────────────────
 
 def from_fit(source) -> pd.DataFrame:
+    """
+    Lecture d'un FIT, points ET totaux de l'appareil.
+
+    POURQUOI LES TOTAUX COMPTENT. Un compteur à baromètre calcule son
+    dénivelé avec un filtrage bien plus élaboré que la somme des hausses
+    d'une série d'altitude. Sur une sortie vélo réelle, la somme brute
+    donnait 2 722 m là où l'appareil annonçait 1 370 — le double. Deux
+    causes cumulées : un bloc de points à altitude nulle pendant un arrêt,
+    qui crée à lui seul 614 m fictifs, et surtout le bruit barométrique,
+    dont 69 % des hausses font moins d'un mètre. Répétées trois mille
+    fois, ces oscillations produisent plus de mille mètres parasites.
+
+    Aucun réglage de lissage ne reproduisait la valeur de l'appareil à
+    mieux de 20 %. Or celle-ci est disponible dans le fichier, et c'est
+    exactement ce que Strava utilise. On la lit donc, et on ne recalcule
+    que si elle manque.
+
+    Les totaux sont attachés au DataFrame via `attrs`, un canal qui
+    survit aux opérations pandas usuelles sans polluer les colonnes.
+    """
     from fitparse import FitFile
 
     data = source if isinstance(source, (str, os.PathLike)) else io.BytesIO(source.read())
@@ -197,7 +186,29 @@ def from_fit(source) -> pd.DataFrame:
             "cad": v.get("cadence", np.nan),
             "power": v.get("power", np.nan),
         })
-    return _finalize(rows)
+    d = _finalize(rows)
+
+    totaux = {}
+    try:
+        for ses in fit.get_messages("session"):
+            v = {f.name: f.value for f in ses}
+            for cle, champ in [("d_plus", "total_ascent"),
+                               ("d_minus", "total_descent"),
+                               ("distance_km", "total_distance"),
+                               ("duration_h", "total_timer_time")]:
+                x = v.get(champ)
+                if x is None:
+                    continue
+                if champ == "total_distance":
+                    x = float(x) / 1000
+                elif champ == "total_timer_time":
+                    x = float(x) / 3600
+                totaux[cle] = float(x)
+            break                       # une seule session par fichier
+    except Exception:
+        pass
+    d.attrs["totaux_appareil"] = totaux
+    return d
 
 
 # ── Strava streams ────────────────────────────────────────────────────────────
