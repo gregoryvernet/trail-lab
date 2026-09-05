@@ -28,6 +28,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from . import metrics
+
 # Facteurs de pondération TRIMP de Banister, coefficient masculin
 TRIMP_B = 1.92
 
@@ -67,9 +69,11 @@ def summarize_ride(d: pd.DataFrame, ftp: float | None,
     out = {
         "distance_km": float(d["dist"].sum() / 1000),
         "d_plus": float(d["d_plus"].sum()),
+        "d_minus": float(d["d_minus"].sum()),
         "duration_h": total_t / 3600,
         "speed_kmh": float(d["dist"].sum() / total_t * 3.6) if total_t else np.nan,
         "has_power": has_power,
+        "totaux_source": "calcul",
         "power_source": "capteur" if has_power else
                         ("estimée — non exploitée" if not np.isnan(power).all() else "absente"),
     }
@@ -94,8 +98,15 @@ def summarize_ride(d: pd.DataFrame, ftp: float | None,
                    work_kj=np.nan, intensity_factor=np.nan, tss=np.nan)
 
     out["trimp"] = trimp(d["hr"].to_numpy(), dt, hr_rest, hr_max)
+    # TOTAUX DE L'APPAREIL. Le chemin vélo ne passe pas par
+    # metrics.summarize : il faut donc appliquer la substitution ici aussi,
+    # sans quoi une sortie FIT affichait 2 289 m de dénivelé recalculé là
+    # où le compteur en annonçait 1 370. Le défaut ne se voyait qu'à vélo,
+    # puisque la course à pied emprunte l'autre chemin.
+    out = metrics.appliquer_totaux(out, d)
+    if out.get("duration_h"):
+        out["speed_kmh"] = out["distance_km"] / out["duration_h"]
     return out
-
 
 def trimp(hr: np.ndarray, dt: np.ndarray, hr_rest: float, hr_max: float) -> float:
     """
