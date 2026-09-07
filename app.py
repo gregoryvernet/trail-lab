@@ -29,7 +29,7 @@ st.set_page_config(page_title="Trail Lab", page_icon="⛰️", initial_sidebar_s
 # Une seule constante. Il y en avait deux, APP_VERSION et VERSION, dont
 # l'une servait un st.caption oublié sous le titre — d'où la ligne de
 # version affichée en double.
-VERSION = "2026-09-04-A"
+VERSION = "2026-09-05-A"
 
 PLOTLY_CFG = {"displayModeBar": False, "scrollZoom": False}
 
@@ -296,12 +296,27 @@ FAMILLE = {"trail": "pied", "route": "pied", "rando": "pied",
 
 
 def tab_sortie(hr_rest, hr_max, store_for_save):
+    # AUCUN FILTRE D'EXTENSION, et c'est délibéré.
+    #
+    # iOS s'appuie sur les types déclarés au système pour décider quels
+    # fichiers sont sélectionnables. Il ne connaît ni .gpx, ni .tcx, ni
+    # .fit : le filtre grisait donc TOUS les fichiers de traces sur iPhone
+    # et iPad, rendant l'import impossible depuis mobile.
+    #
+    # La contrepartie est mince : sans filtre, un fichier inadapté peut
+    # être déposé, mais la lecture échoue alors proprement avec un message
+    # explicite. Mieux vaut refuser un fichier après coup que d'empêcher
+    # d'en choisir un.
     st.caption("Dépose un GPX, TCX ou FIT. Le FIT est le format le plus riche.")
-    up = st.file_uploader("Fichier", type=["gpx", "tcx", "fit"],
-                          label_visibility="collapsed")
+    up = st.file_uploader("Fichier", label_visibility="collapsed")
     if not up:
         return
 
+    ext = Path(up.name).suffix.lower().lstrip(".")
+    if ext not in ("gpx", "tcx", "fit"):
+        st.error(f"Format « {ext or 'inconnu'} » non reconnu. Dépose un "
+                 "fichier GPX, TCX ou FIT.")
+        return
     try:
         raw = ingest.load(up, up.name)
     except Exception as e:
@@ -1270,8 +1285,9 @@ def tab_course(store, hr_rest, hr_max):
     bins = lire(store, SLOPE_BINS)
 
     saved = lire(store, COURSES)
-    up = st.file_uploader("Trace de la course (GPX)", type=["gpx", "tcx", "fit"],
-                          key="race")
+    # Pas de filtre d'extension : voir la note dans tab_sortie, iOS grise
+    # les fichiers dont il ne connaît pas le type.
+    up = st.file_uploader("Trace de la course (GPX, TCX ou FIT)", key="race")
 
     if not up and not saved.empty:
         # Par défaut, la dernière trace importée : pas besoin de la redéposer
