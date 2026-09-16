@@ -22,10 +22,11 @@ s4-d1,2026-09-14,4,Assimilation — semaine volontairement allégée,renfo,Renfo
 s4-d2,2026-09-15,4,Assimilation — semaine volontairement allégée,velo,Vélo,Vélo bureau (aller),70.0,70.0,,,False,Trajet domicile-travail.
 s4-d3,2026-09-15,4,Assimilation — semaine volontairement allégée,velo,Vélo,Vélo bureau (retour),70.0,70.0,,,False,Trajet travail-domicile.
 s4-d4,2026-09-16,4,Assimilation — semaine volontairement allégée,trail,Qualitative,Fractionné club,70.0,70.0,,,False,Séance club.
-s4-d5,2026-09-17,4,Assimilation — semaine volontairement allégée,repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
-s4-d6,2026-09-18,4,Assimilation — semaine volontairement allégée,trail,Endurance fondamentale,Course EF,60.0,60.0,,,False,"EF, éventuellement trail léger."
-s4-d7,2026-09-19,4,Assimilation — semaine volontairement allégée,repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
-s4-d8,2026-09-20,4,Assimilation — semaine volontairement allégée,trail,Endurance fondamentale,Course EF,60.0,60.0,,,False,EF.
+s4-d5,2026-09-17,4,Assimilation — semaine volontairement allégée,velo,Vélo,Vélo bureau (aller),70.0,70.0,,,False,Trajet domicile-travail.
+s4-d6,2026-09-17,4,Assimilation — semaine volontairement allégée,velo,Vélo,Vélo bureau (retour),70.0,70.0,,,False,Trajet travail-domicile.
+s4-d7,2026-09-18,4,Assimilation — semaine volontairement allégée,trail,Endurance fondamentale,Course EF,60.0,60.0,,,False,"EF, éventuellement trail léger."
+s4-d8,2026-09-19,4,Assimilation — semaine volontairement allégée,repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
+s4-d9,2026-09-20,4,Assimilation — semaine volontairement allégée,trail,Endurance fondamentale,Course EF,60.0,60.0,,,False,EF.
 s5-d1,2026-09-21,5,Gros bloc spécifique Templiers,renfo,Renforcement,PPG,40.0,40.0,,,False,PPG 40 min.
 s5-d2,2026-09-22,5,Gros bloc spécifique Templiers,velo,Vélo,Vélo bureau (aller),75.0,75.0,,,False,Trajet domicile-travail.
 s5-d3,2026-09-22,5,Gros bloc spécifique Templiers,velo,Vélo,Vélo bureau (retour),75.0,75.0,,,False,Trajet travail-domicile.
