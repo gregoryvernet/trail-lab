@@ -31,10 +31,10 @@ s5-d1,2026-09-21,5,Gros bloc spécifique Templiers,renfo,Renforcement,PPG,40.0,4
 s5-d2,2026-09-22,5,Gros bloc spécifique Templiers,velo,Vélo,Vélo bureau (aller),75.0,75.0,,,False,Trajet domicile-travail.
 s5-d3,2026-09-22,5,Gros bloc spécifique Templiers,velo,Vélo,Vélo bureau (retour),75.0,75.0,,,False,Trajet travail-domicile.
 s5-d4,2026-09-23,5,Gros bloc spécifique Templiers,trail,Endurance fondamentale,Trail,105.0,105.0,,,False,Trail 1h45.
-s5-d5,2026-09-24,5,Gros bloc spécifique Templiers,velo,Vélo,Vélo bureau (aller),75.0,75.0,,,False,Trajet domicile-travail.
-s5-d6,2026-09-24,5,Gros bloc spécifique Templiers,velo,Vélo,Vélo bureau (retour),75.0,75.0,,,False,Trajet travail-domicile.
-s5-d7,2026-09-25,5,Gros bloc spécifique Templiers,trail,Endurance fondamentale,Trail,120.0,120.0,,,False,Trail 2h.
-s5-d8,2026-09-26,5,Gros bloc spécifique Templiers,repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
+s5-d5,2026-09-24,5,Gros bloc spécifique Templiers,velo,Vélo,Vélo bureau (aller),120.0,120.0,,,False,Sortie Z2/3.
+s5-d6,2026-09-24,5,Gros bloc spécifique Templiers,trail,Endurance fondamentale,Trail,90.0,90.0,,,False,Trail 1h30.
+s5-d7,2026-09-25,5,Gros bloc spécifique Templiers,repos,Repos,Repos,0.0,0.0,,,False,Repos complet.
+s5-d8,2026-09-26,5,Gros bloc spécifique Templiers,trail,Endurance fondamentale,Course EF,60.0,60.0,,,False,EF 1h.
 s5-d9,2026-09-27,5,Gros bloc spécifique Templiers,trail,Endurance fondamentale,Course EF,90.0,120.0,,,False,EF 1h30 à 2h.
 s6-d1,2026-09-28,6,Semaine pic — la plus importante du cycle,repos,Repos,Repos,0.0,0.0,,,False,Mobilité légère.
 s6-d2,2026-09-29,6,Semaine pic — la plus importante du cycle,trail,Qualitative,Côtes longues,75.0,75.0,,,False,"20′ EF + 6 × 5′ en montée à allure soutenue mais régulière, récupération en descente."
