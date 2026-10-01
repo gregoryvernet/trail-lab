@@ -39,7 +39,7 @@ import pandas as pd
 
 from engine.metrics import wmean
 
-VERSION = "2026-08-25-C"
+VERSION = "2026-09-25-A"
 
 FLAT = 0.03          # |pente| en deçà de laquelle on considère du plat
 CLIMB = 0.05         # pente au-delà de laquelle on est en montée
@@ -378,6 +378,12 @@ def compare_bands(bins: pd.DataFrame, recent_ids, past_ids,
             "force": force, "niveau": niveau,
             "signal": niveau in ("net", "probable"),
         })
+    # Aucune ligne retenue : un DataFrame construit depuis une liste vide
+    # n'a aucune colonne, et le tri sur « pente » lève alors un KeyError.
+    # Le cas survient dès que les filtres de distance écartent tout —
+    # période courte, peu de sorties, ou semaines sans dénivelé.
+    if not rows:
+        return pd.DataFrame()
     return pd.DataFrame(rows).sort_values("pente")
 
 
@@ -675,6 +681,12 @@ def walk_run_threshold(bins: pd.DataFrame, activity_ids,
             "marche_gagnante": bool(vm >= vc * 0.97 and
                                     (np.isnan(cm) or np.isnan(cc) or cm <= cc)),
         })
+    # Aucune ligne retenue : un DataFrame construit depuis une liste vide
+    # n'a aucune colonne, et le tri sur « pente » lève alors un KeyError.
+    # Le cas survient dès que les filtres de distance écartent tout —
+    # période courte, peu de sorties, ou semaines sans dénivelé.
+    if not rows:
+        return pd.DataFrame()
     return pd.DataFrame(rows).sort_values("pente")
 
 
